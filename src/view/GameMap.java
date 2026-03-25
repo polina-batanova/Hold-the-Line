@@ -11,7 +11,7 @@ public class GameMap extends JPanel {
     public GameMap() {
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
     }
-    private int[][] grid;
+    private int[][] grid = new int[15][1];
     public int[][] getGrid() {
         return grid;
     }
