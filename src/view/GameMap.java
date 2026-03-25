@@ -1,4 +1,6 @@
 package view;
 
-public class GameMap {
+import javax.swing.*;
+
+public class GameMap extends JPanel {
 }
