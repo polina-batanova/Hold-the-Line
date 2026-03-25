@@ -22,5 +22,18 @@ public class GameMap extends JPanel {
     public int[][] getGrid() {
         return grid;
     }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLS; c++) {
+                if (grid[r][c] == 1) g.setColor(Color.LIGHT_GRAY);
+                else if (grid[r][c] == 2) g.setColor(Color.DARK_GRAY);
+                else g.setColor(new Color(34, 139, 34));
+
+                g.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+        }
+    }
 
 }
