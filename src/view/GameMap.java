@@ -52,7 +52,7 @@ public class GameMap extends JPanel {
         return grid[r][c] > 0;
     }
     public boolean isValidCoordinate(int r, int c) {
-        return r >= 0 && r < ROWS && c >= 0 && c < COLS;
+        return true;
     }
 
 }
