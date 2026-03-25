@@ -23,5 +23,10 @@ public class MapTest {
         GameMap map = new GameMap();
         assertEquals(800, map.getPreferredSize().width, "Map width should be 800 pixels");
     }
+    @Test
+    public void testMapHeight() {
+        GameMap map = new GameMap();
+        assertEquals(600, map.getPreferredSize().height, "Height should be 600px");
+    }
 
 }
