@@ -44,5 +44,12 @@ public class GameMap extends JPanel {
             }
         }
     }
+    public boolean isRoad(int r, int c) {
+        if (!isValidCoordinate(r, c)) return false;
+        return grid[r][c] > 0;
+    }
+    public boolean isValidCoordinate(int r, int c) {
+        return r >= 0 && r < 15 && c >= 0 && c < 20;
+    }
 
 }
