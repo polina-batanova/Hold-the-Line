@@ -7,8 +7,10 @@ public class GameMap extends JPanel {
     private final int TILE_SIZE = 40;
     private final int ROWS = 15;
     private final int COLS = 20;
+    private final AssetLoader assetLoader;
 
     public GameMap() {
+        this.assetLoader = new AssetLoader();
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
     }
     private int[][] grid = {
