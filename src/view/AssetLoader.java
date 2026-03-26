@@ -1,6 +1,9 @@
 package view;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,5 +21,15 @@ public class AssetLoader {
 
     public BufferedImage getSprite(String key) {
         return null;
+    }
+
+    private BufferedImage loadImage(String path) {
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (is == null) throw new IOException("Resource not found: " + path);
+            return ImageIO.read(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
