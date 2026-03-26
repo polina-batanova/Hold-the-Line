@@ -14,19 +14,23 @@ public class AssetLoader {
         loadSprites();
     }
     private void loadSprites() {
-        sprites.put("grass", loadImage("/assets/tiles/FieldTile_01.png"));
-        sprites.put("road", loadImage("/assets/tiles/FieldTile_05.png"));
-        sprites.put("tower_spot", loadImage("/assets/placeholders/PlaceForTower1.png"));
+        sprites.put("grass", loadImage("assets/tiles/FieldsTile_01.png"));
+        sprites.put("road", loadImage("assets/tiles/FieldsTile_05.png"));
+        sprites.put("tower_spot", loadImage("assets/placeholders/PlaceForTower1.png"));
     }
 
     private BufferedImage loadImage(String path) {
-        try (InputStream is = getClass().getResourceAsStream(path)) {
-            if (is == null) throw new IOException("Resource not found: " + path);
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
+            if (is == null) {
+                System.err.println("Resource not found at: " + path);
+                return null;
+            }
             return ImageIO.read(is);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+
     }
     public BufferedImage getSprite(String key) {
         return sprites.get(key);
