@@ -2,6 +2,7 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class GameMap extends JPanel {
     private final int TILE_SIZE = 40;
@@ -38,11 +39,20 @@ public class GameMap extends JPanel {
         super.paintComponent(g);
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
-                if (grid[r][c] == 1) g.setColor(Color.LIGHT_GRAY);
-                else if (grid[r][c] == 2) g.setColor(Color.DARK_GRAY);
-                else g.setColor(new Color(34, 139, 34));
+                BufferedImage img;
 
-                g.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                if (grid[r][c] == 1 || grid[r][c] == 2) {
+                    img = assetLoader.getSprite("road");
+                } else {
+                    img = assetLoader.getSprite("grass");
+                }
+
+                if (img != null) {
+                    g.drawImage(img, c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE, null);
+                } else {
+                    g.setColor(new Color(34, 139, 34));
+                    g.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                }
             }
         }
     }
