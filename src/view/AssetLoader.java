@@ -19,10 +19,6 @@ public class AssetLoader {
         sprites.put("tower_spot", loadImage("/assets/placeholders/PlaceForTower1.png"));
     }
 
-    public BufferedImage getSprite(String key) {
-        return null;
-    }
-
     private BufferedImage loadImage(String path) {
         try (InputStream is = getClass().getResourceAsStream(path)) {
             if (is == null) throw new IOException("Resource not found: " + path);
@@ -32,4 +28,8 @@ public class AssetLoader {
             return null;
         }
     }
+    public BufferedImage getSprite(String key) {
+        return sprites.get(key);
+    }
+
 }
