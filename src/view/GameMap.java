@@ -32,30 +32,40 @@ public class GameMap extends JPanel {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
     public int[][] getGrid() {
+
         return grid;
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
-                BufferedImage img;
+                BufferedImage tileImg;
 
                 if (grid[r][c] == 1 || grid[r][c] == 2) {
-                    img = assetLoader.getSprite("road");
+                    tileImg = assetLoader.getSprite("road");
                 } else {
-                    img = assetLoader.getSprite("grass");
+                    tileImg = assetLoader.getSprite("grass");
                 }
 
-                if (img != null) {
-                    g.drawImage(img, c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE, null);
-                } else {
-                    g.setColor(new Color(34, 139, 34));
-                    g.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                if (tileImg != null) {
+                    g.drawImage(tileImg, c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE, null);
+                }
+
+
+                if (grid[r][c] == 0) {
+                    BufferedImage spot = assetLoader.getSprite("tower_spot");
+                    if (spot != null) {
+                        g.drawImage(spot, c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE, null);
+                    }
                 }
             }
         }
     }
+
+
     public boolean isRoad(int r, int c) {
         if (!isValidCoordinate(r, c)) {
             return false;
