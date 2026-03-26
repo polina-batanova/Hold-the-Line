@@ -47,4 +47,12 @@ public class MapTest {
         assertTrue(map.isValidCoordinate(14, 19), "14, 19 (bottom-right) should be within bounds");
     }
 
+    @Test
+    void testAssetLoading() {
+        AssetLoader loader = new AssetLoader();
+        assertNotNull(loader.getSprite("grass"), "Grass image should not be null");
+        assertNotNull(loader.getSprite("tower_spot"), "Tower spot image should not be null");
+    }
+
+
 }
