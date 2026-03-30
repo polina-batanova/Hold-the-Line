@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EntityTest {
-    // entity / position tests
+    // ====== ENTITY / POSITION TESTS ======
 
     // tests that Entity correctly stores row/col
     @Test
