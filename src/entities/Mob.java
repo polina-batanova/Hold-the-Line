@@ -67,7 +67,7 @@ public class Mob extends Entity {
         }
     }
 
-    // true if mob's hp <=0
+    // true if mob's hp <= 0
     public boolean isDead() {
         return hp <= 0;
     }
