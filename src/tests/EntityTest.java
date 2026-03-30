@@ -134,7 +134,6 @@ public class EntityTest {
     }
 
     // tests that isInRange() returns false when mob out of tower attack range
-    // same thing as with testAliveReturn() todo: delete comment after tower method implementation
     @Test
     public void testOutOfRange() {
         Tower tower = new Tower("Archer", 5, 5, 3, 15, 100);
