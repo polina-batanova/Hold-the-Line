@@ -1,4 +1,4 @@
-package tests.view;
+package tests;
 
 import org.junit.jupiter.api.Test;
 import view.AssetLoader;
@@ -58,3 +58,6 @@ public class MapTest {
 
 
 }
+
+
+
