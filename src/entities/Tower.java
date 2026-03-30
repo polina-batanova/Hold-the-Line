@@ -11,27 +11,35 @@ public class Tower extends Entity {
     // constructs a tower with all stats
     public Tower(String name, int row, int col, int range, int damage, int cost) {
         super(name, row, col);
-        // todo: implement validation and assignment
+        if (range <= 0) {
+            throw new IllegalArgumentException("Tower range must be greater than 0.");
+        }
+        if (damage <= 0) {
+            throw new IllegalArgumentException("Tower damage must be greater than 0.");
+        }
+        if (cost < 0) {
+            throw new IllegalArgumentException("Tower cost cannot be negative.");
+        }
+        this.range  = range;
+        this.damage = damage;
+        this.cost   = cost;
     }
 
     public int getRange() {
-        // todo: implement
-        return 0;
+        return range;
     }
 
     public int getDamage() {
-        // todo: implement
-        return 0;
+        return damage;
     }
 
     public int getCost() {
-        // todo: implement
-        return 0;
+        return cost;
     }
 
     // checks if mob in a tower's attack range
     public boolean isInRange(Mob mob) {
-        // todo: implement
-        return false;
+        double distance = Math.hypot(this.row - mob.getRow(), this.col - mob.getCol());
+        return distance <= range;
     }
 }
