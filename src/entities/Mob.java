@@ -14,42 +14,61 @@ public class Mob extends Entity {
     public Mob(String name, int row, int col,
                int hp, int speed, int damage, int bounty, int cost) {
         super(name, row, col);
-        // todo: implement validation and assignment
+        if (hp <= 0) {
+            throw new IllegalArgumentException("Mob HP must be greater than 0.");
+        }
+        if (speed <= 0) {
+            throw new IllegalArgumentException("Mob speed must be greater than 0.");
+        }
+        if (damage < 0) {
+            throw new IllegalArgumentException("Mob damage cannot be negative.");
+        }
+        if (bounty < 0) {
+            throw new IllegalArgumentException("Mob bounty cannot be negative.");
+        }
+        if (cost < 0) {
+            throw new IllegalArgumentException("Mob cost cannot be negative.");
+        }
+        this.hp     = hp;
+        this.speed  = speed;
+        this.damage = damage;
+        this.bounty = bounty;
+        this.cost   = cost;
     }
 
     public int getHp() {
-        // todo: implement
-        return -1;
+        return hp;
     }
 
     public int getSpeed() {
-        // todo: implement
-        return -1;
+        return speed;
     }
 
     public int getDamage() {
-        // todo: implement
-        return -1;
+        return damage;
     }
 
     public int getBounty() {
-        // todo: implement
-        return -1;
+        return bounty;
     }
 
     public int getCost() {
-        // todo: implement
-        return -1;
+        return cost;
     }
 
     // reduces mob's hp by the given amount
-    public void takeDamage(int amount) {
-        // todo: implement
+    public void takeDamage(int damage) {
+        if (damage < 0) {
+            throw new IllegalArgumentException("Damage amount cannot be negative.");
+        }
+        hp -= damage;
+        if (hp < 0) {
+            hp = 0;
+        }
     }
 
     // true if mob's hp <=0
     public boolean isDead() {
-        // todo: implement
-        return false;
+        return hp <= 0;
     }
 }
