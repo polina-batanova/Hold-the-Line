@@ -8,61 +8,77 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PlayerTest {
 
     @Test
-    public void  playerShouldInitializeCorrectly() {
-        Player player = new Player("Player 1", 100, 200);
+    public void testInit() {
+        Player p = new Player("P1", 100, 200);
 
-        assertEquals("Player 1", player.getName());
-        assertEquals(100, player.getHealth());
-        assertEquals(200,  player.getMoney());
+        // check basic values
+        assertEquals("P1", p.getName());
+        assertEquals(100, p.getHealth());
+        assertEquals(200, p.getMoney());
     }
 
     @Test
-    public void takeDamageShouldReduceHealth() {
-        Player player = new Player("Player 1", 100, 200);
+    public void testDamage() {
+        Player p = new Player("P1", 100, 200);
 
-        player.takeDamage(30);
-
-        assertEquals(70, player.getHealth());
+        p.takeDamage(30);
+        assertEquals(70, p.getHealth());
     }
 
     @Test
-    public void takeDamageShouldNotGoBelowZero() {
-        Player player = new Player("Player 1", 50, 200);
+    public void  testDamageBelowZero() {
+        Player p = new Player("P1", 50, 200);
 
-        player.takeDamage(100);
+        p.takeDamage(100);
 
-        assertEquals(0, player.getHealth());
+        // should not go below 0
+        assertEquals(0, p.getHealth());
     }
 
     @Test
-    public void addMoneyShouldIncreaseMoney() {
-        Player player = new Player("Player 1", 100, 200);
+    public void testAddMoney() {
+        Player p = new Player("P1", 100, 200);
 
+        p.addMoney(50);
 
-        player.addMoney(50);
-
-        assertEquals(250, player.getMoney());
+        assertEquals(250,  p.getMoney());
     }
 
     @Test
-    public void spendMoneyShouldWorkIfEnoughFunds() {
-        Player player = new Player("Player 1", 100, 200);
+    public void testSpendMoneyOk() {
+        Player p = new Player("P1", 100, 200);
 
-        boolean result = player.spendMoney(80);
+        boolean  ok = p.spendMoney(80);
 
-
-        assertTrue(result);
-        assertEquals(120, player.getMoney());
+        assertTrue(ok);
+        assertEquals(120, p.getMoney());
     }
 
     @Test
-    public void spendMoneyShouldFailIfNotEnoughFunds() {
-        Player player = new Player("Player 1", 100, 50);
+    public void testSpendMoneyFail() {
+        Player p = new Player("P1", 100, 50);
 
+        boolean ok =  p.spendMoney(80);
 
-        boolean result = player.spendMoney(80);
+        assertFalse(ok);
+        assertEquals(50, p.getMoney());
+    }
 
-        assertFalse(result);
-        assertEquals(50, player.getMoney());
+    @Test
+    public void testNegativeDamage() {
+        Player p = new Player("P1",  100, 200);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            p.takeDamage(-10);
+        });
+    }
+
+    @Test
+    public void testNegativeMoneyAdd() {
+        Player p = new Player("P1", 100, 200);
+
+         assertThrows(IllegalArgumentException.class, () -> {
+            p.addMoney(-5);
+        });
     }
 }
