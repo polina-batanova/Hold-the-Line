@@ -1,6 +1,8 @@
-package view;
+package tests.view;
 
 import org.junit.jupiter.api.Test;
+import view.AssetLoader;
+import view.GameMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
