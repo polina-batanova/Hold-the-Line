@@ -8,39 +8,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AssetLoader {
-    // Map for storing loaded images
-    private Map<String, BufferedImage> sprites = new HashMap<>();
+    // Key = image, Value = BufferedImage
+    private final Map<String, BufferedImage> spriteCache = new HashMap<>();
 
     public AssetLoader() {
-        loadSprites();
     }
 
-    // Load images into the map
-    private void loadSprites() {
-        sprites.put("grass", loadImage("assets/tiles/FieldsTile_01.png"));
-        sprites.put("road", loadImage("assets/tiles/FieldsTile_05.png"));
-        sprites.put("tower_spot", loadImage("assets/placeholders/PlaceForTower1.png"));
+    public BufferedImage getSprite(String key) {
+        if (spriteCache.containsKey(key)) {
+            return spriteCache.get(key);
+        }
+
+        // Full path
+        String fullPath = "assets/" + key + ".png";
+        BufferedImage image = loadImage(fullPath);
+
+        if (image != null) {
+            spriteCache.put(key, image);
+        }
+        return image;
     }
 
-    // Load single image
     private BufferedImage loadImage(String path) {
-        // Get the file as an input stream
+        // Try-with-resources which closes InputStream
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
             if (is == null) {
-                System.err.println("Resource not found at: " + path);
+                System.err.println("Resource not found at path: src/" + path);
                 return null;
             }
-            // Read and return image
+            // Read image from stream and return it
             return ImageIO.read(is);
         } catch (IOException e) {
+            System.err.println("Could not read image at: " + path);
             e.printStackTrace();
             return null;
         }
-
     }
-    // Get loaded image by key
-    public BufferedImage getSprite(String key) {
-        return sprites.get(key);
-    }
-
 }
