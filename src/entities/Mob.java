@@ -19,27 +19,27 @@ public class Mob extends Entity {
 
     public int getHp() {
         // todo: implement
-        return 0;
+        return -1;
     }
 
     public int getSpeed() {
         // todo: implement
-        return 0;
+        return -1;
     }
 
     public int getDamage() {
         // todo: implement
-        return 0;
+        return -1;
     }
 
     public int getBounty() {
         // todo: implement
-        return 0;
+        return -1;
     }
 
     public int getCost() {
         // todo: implement
-        return 0;
+        return -1;
     }
 
     // reduces mob's hp by the given amount
