@@ -7,8 +7,8 @@ public class Mob extends Entity {
     private int hp;
     private int speed;
     private int damage; // amount of base hp deducted
-    private int bounty; // reward on mob death
-    private int cost; // cost to queue mob
+    private int bounty; // reward on mob's death
+    private int cost; // cost to queue
 
     // constructs a mob with all stats
     public Mob(String name, int row, int col,
