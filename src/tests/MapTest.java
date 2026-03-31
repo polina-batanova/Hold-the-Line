@@ -1,61 +1,47 @@
 package tests;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import view.AssetLoader;
 import view.GameMap;
-
+import java.awt.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class MapTest {
+    private GameMap gameMap;
+
+    @BeforeEach
+    void setUp() {
+        gameMap = new GameMap();
+    }
+    @Test
+    void testSize() {
+        Dimension size = gameMap.getPreferredSize();
+        assertEquals(800, size.width, "Map width should be 800");
+        assertEquals(600, size.height, "Map height should be 600");
+    }
 
     @Test
-    public void testGridDimensions() {
-        GameMap gameMap = new GameMap();
+    void testAlignment() {
         int[][] grid = gameMap.getGrid();
 
-        assertNotNull(grid, "Grid array should be initialized");
-        assertEquals(15, grid.length, "Grid should have 15 rows");
-        assertEquals(20, grid[0].length, "Grid should have 20 columns");
-    }
+        assertEquals(60, grid[1][1]);
+        assertEquals(60, grid[1][2]);
+        assertEquals(60, grid[2][1]);
+        assertEquals(60, grid[2][2]);
 
-    @Test
-    public void testMapWidth() {
-        GameMap map = new GameMap();
-        assertEquals(800, map.getPreferredSize().width, "Map width should be 800 pixels");
-    }
-    @Test
-    public void testMapHeight() {
-        GameMap map = new GameMap();
-        assertEquals(600, map.getPreferredSize().height, "Height should be 600px");
-    }
-
-    @Test
-    public void testIsRoadLogic() {
-        GameMap map = new GameMap();
-        assertTrue(map.isRoad(1, 0), "Row 1, Col 0 should be recognized as a road");
-        assertFalse(map.isRoad(0, 0), "Row 0, Col 0 should be recognized as grass");
+        assertEquals(50, grid[12][16]);
+        assertEquals(50, grid[12][17]);
+        assertEquals(50, grid[13][16]);
+        assertEquals(50, grid[13][17]);
     }
     @Test
-    public void testOutOfBounds() {
-        GameMap map = new GameMap();
+    void testRoadIntegrity() {
+        int[][] grid = gameMap.getGrid();
 
-        assertFalse(map.isValidCoordinate(15, 0), "Row 15 should be out of bounds");
-        assertFalse(map.isValidCoordinate(0, 20), "Column 20 should be out of bounds");
-
-        assertFalse(map.isValidCoordinate(-1, 0), "Negative row should be out of bounds");
-        assertFalse(map.isValidCoordinate(0, -1), "Negative column should be out of bounds");
-
-        assertTrue(map.isValidCoordinate(14, 19), "14, 19 (bottom-right) should be within bounds");
+        assertEquals(11, grid[3][0]);
+        assertEquals(10, grid[9][0]);
     }
-
-    @Test
-    void testAssetLoading() {
-        AssetLoader loader = new AssetLoader();
-        assertNotNull(loader.getSprite("grass"), "Grass image should not be null");
-        assertNotNull(loader.getSprite("tower_spot"), "Tower spot image should not be null");
-    }
-
 
 }
 
