@@ -119,4 +119,20 @@ public class GameManagerTest {
 
         assertEquals(60, gm.getBaseIncome());
     }
+
+    @Test
+    public void testBuyTowerOk() {
+        boolean ok = gm.buyTower(p1, 50);
+
+        assertTrue(ok);
+        assertEquals(150, p1.getMoney());
+    }
+
+    @Test
+    public void testBuyTowerFail() {
+        boolean ok = gm.buyTower(p1, 500);
+
+        assertFalse(ok);
+        assertEquals(200, p1.getMoney());
+    }
 }
