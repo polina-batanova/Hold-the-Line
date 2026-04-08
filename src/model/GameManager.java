@@ -37,6 +37,8 @@ public class GameManager {
                 break;
             case ROUND_EXECUTION:
                 currentRound++;
+                baseIncome += 10;
+                giveRoundIncome();
                 state = GameState.PLAYER1_TURN;
                 break;
             default:
@@ -70,5 +72,32 @@ public class GameManager {
     public void giveRoundIncome() {
         player1.addMoney(baseIncome);
         player2.addMoney(baseIncome);
+    }
+
+
+
+    public boolean buyTower(Player p, int cost) {
+        if (p == null) {
+             throw new  IllegalArgumentException("Player cannot be null.");
+        }
+
+        return p.spendMoney(cost);
+    }
+
+    public boolean queueMob(Player p, Mob mob,  int cost) {
+        if (p == null  || mob == null) {
+            throw new IllegalArgumentException("Invalid input.");
+        }
+
+         if (p.spendMoney(cost)) {
+            p.addMobToQueue(mob);
+            return true;
+        }
+
+        return false;
+    }
+
+     public int getBaseIncome() {
+        return baseIncome;
     }
 }
