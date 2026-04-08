@@ -82,6 +82,7 @@ public class GameManagerTest {
         });
     }
 
+
     @Test
     public void testStartRoundCorrectState() {
         gm.startGame();
@@ -90,5 +91,32 @@ public class GameManagerTest {
         gm.startRound();
 
         assertEquals(GameState.ROUND_EXECUTION, gm.getState());
+    }
+
+    @Test
+    public void testBaseIncomeStartValue() {
+        assertEquals(50, gm.getBaseIncome());
+    }
+
+
+    @Test
+    public void testIncomeAddedOnStart() {
+        gm.startGame();
+
+
+        assertEquals(250, p1.getMoney());
+        assertEquals(250, p2.getMoney());
+    }
+
+
+
+    @Test
+    public void testIncomeIncreasesNextRound() {
+        gm.startGame();
+        gm.nextTurn();
+        gm.nextTurn();
+        gm.nextTurn();
+
+        assertEquals(60, gm.getBaseIncome());
     }
 }
