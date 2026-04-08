@@ -29,7 +29,7 @@ public class Player {
         this.health = health;
         this.money = money;
 
-      
+
         this.queuedMobs = new LinkedList<>();
     }
 
@@ -76,5 +76,18 @@ public class Player {
         }
 
         return false;
+    }
+
+
+    public void addMobToQueue(Mob mob) {
+        if (mob == null) {
+            throw new IllegalArgumentException("Mob cannot be null.");
+        }
+
+        queuedMobs.add(mob);
+    }
+
+    public Queue<Mob> getQueuedMobs() {
+        return queuedMobs;
     }
 }
