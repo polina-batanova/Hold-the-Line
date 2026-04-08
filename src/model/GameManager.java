@@ -5,6 +5,7 @@ public class GameManager {
     private Player player2;
     private GameState state;
     private int currentRound;
+    private int baseIncome;
 
     public GameManager(Player player1, Player player2) {
         if (player1 == null || player2 == null) {
@@ -15,6 +16,7 @@ public class GameManager {
         this.player2 = player2;
         this.state = GameState.NOT_STARTED;
         this.currentRound = 0;
+        this.baseIncome = 50;
     }
 
     public void startGame() {
