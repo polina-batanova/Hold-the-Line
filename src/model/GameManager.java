@@ -20,8 +20,11 @@ public class GameManager {
     }
 
     public void startGame() {
-        currentRound = 1;
-        state = GameState.PLAYER1_TURN;
+        public void startGame() {
+            currentRound = 1;
+            giveRoundIncome();
+            state = GameState.PLAYER1_TURN;
+        }
     }
 
     public void nextTurn() {
@@ -62,5 +65,10 @@ public class GameManager {
 
     public int getCurrentRound() {
         return currentRound;
+    }
+
+    public void giveRoundIncome() {
+        player1.addMoney(baseIncome);
+        player2.addMoney(baseIncome);
     }
 }
