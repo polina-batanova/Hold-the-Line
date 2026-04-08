@@ -5,6 +5,7 @@ import model.GameState;
 import model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import model.Mob;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -134,5 +135,30 @@ public class GameManagerTest {
 
         assertFalse(ok);
         assertEquals(200, p1.getMoney());
+    }
+
+    @Test
+    public void testQueueMobOk() {
+
+        Mob m = new Mob();
+
+        boolean ok = gm.queueMob(p1, m, 30);
+
+
+        assertTrue(ok);
+        assertEquals(170,  p1.getMoney());
+        assertEquals(1, p1.getQueuedMobs().size());
+    }
+
+    @Test
+    public void testQueueMobFail() {
+        Mob m = new Mob();
+
+
+        boolean ok = gm.queueMob(p1, m, 500);
+
+        assertFalse(ok);
+        assertEquals(200, p1.getMoney());
+        assertEquals(0,  p1.getQueuedMobs().size());
     }
 }
