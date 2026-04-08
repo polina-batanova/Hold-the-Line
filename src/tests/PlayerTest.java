@@ -2,6 +2,7 @@ package tests;
 
 import model.Player;
 import org.junit.jupiter.api.Test;
+import model.Mob;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -80,5 +81,15 @@ public class PlayerTest {
          assertThrows(IllegalArgumentException.class, () -> {
             p.addMoney(-5);
         });
+    }
+
+    @Test
+    public void testQueueMob() {
+        Player p = new Player("P1", 100, 200);
+        Mob m = new Mob();
+
+        p.addMobToQueue(m);
+
+        assertEquals(1, p.getQueuedMobs().size());
     }
 }
