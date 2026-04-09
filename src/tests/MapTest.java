@@ -2,6 +2,7 @@ package tests;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import view.AssetLoader;
 import view.GameMap;
 import java.awt.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,6 +49,14 @@ public class MapTest {
         assertEquals(7, grid[7][0]);
         assertEquals(9, grid[1][9]);
         assertEquals(60, grid[1][1]);
+    }
+    @Test
+    void testAssetsExist() {
+        AssetLoader loader = new AssetLoader();
+        assertNotNull(loader.getSprite("tiles/FieldsTile_38"), "Grass asset missing");
+        assertNotNull(loader.getSprite("fence/1"), "Fence asset missing");
+        assertNotNull(loader.getSprite("decor/Lamp1"), "Banner asset missing");
+        assertNotNull(loader.getSprite("PlaceForTower1"), "Tower slot asset missing");
     }
 
 }
