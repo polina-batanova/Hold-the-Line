@@ -38,6 +38,11 @@ public class MapTest {
         assertTrue(gameMap.shouldDrawShadow(15));
         assertFalse(gameMap.shouldDrawShadow(0));
     }
+    @Test
+    void testObjects() {
+        assertEquals(2, gameMap.getBushVariant(0, 1), "Bush variant at (0,1) should be 2");
+        assertEquals(7, gameMap.getRockVariant(0, 18), "Rock variant at (0,18) should be 7");
+    }
 
 }
 
