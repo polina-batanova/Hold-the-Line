@@ -39,31 +39,31 @@ public class GameMap extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        // Clears screen before drawing
         super.paintComponent(g);
 
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
-
-                // Convert grid position to pixel position
                 int x = c * TILE_SIZE;
                 int y = r * TILE_SIZE;
 
-                // Draw base floor tile
-                BufferedImage floor = assetLoader.getSprite("tiles/FieldsTile_05");
-                if (floor != null) {
-                    g.drawImage(floor, x, y, TILE_SIZE, TILE_SIZE, null);
+                draw(g, "tiles/FieldsTile_38", x, y);
+
+                renderPath(g, grid[r][c], x, y);
+
+
+                if (grid[r][c] == 9) {
+                    draw(g, "PlaceForTower1", x, y);
                 }
 
-                if (grid[r][c] == 10 || grid[r][c] == 11) {
-                    BufferedImage road = assetLoader.getSprite("decor/Dirt1");
-                    if (road != null) {
-                        g.drawImage(road, x, y, TILE_SIZE, TILE_SIZE, null);
-                    }
+                if (grid[r][c] == 7) {
+                    draw(g, "fence/1", x, y);
                 }
 
-                // Draw special objects (bases)
-                renderBases(g, r, c, x, y);
+                if (grid[r][c] == 60 || grid[r][c] == 50) {
+                    draw(g, "camp/1", x, y); // Tent
+                    draw(g, "decor/Lamp1", x + 15, y - 5); // Banner
+                    draw(g, "camp/5", x + 25, y + 20); // Fire
+                }
             }
         }
     }
