@@ -53,6 +53,15 @@ public class MapTest {
         assertEquals(62, grid[2][2]);
         assertEquals(62, grid[11][17]);
     }
+    @Test
+    void testAnimation() {
+        int sheetWidth = 192;
+        int totalFrames = 6;
+
+        assertEquals(0, gameMap.calculateFrameX(0, sheetWidth, totalFrames));
+        assertEquals(32, gameMap.calculateFrameX(1, sheetWidth, totalFrames));
+        assertEquals(0, gameMap.calculateFrameX(6, sheetWidth, totalFrames));
+    }
 
 
 }
