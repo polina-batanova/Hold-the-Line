@@ -13,6 +13,8 @@ public class GameMap extends JPanel {
     private final int COLS = 20;
 
     private final AssetLoader assetLoader;
+    private int animationTick = 0;
+    private final Timer animationTimer;
 
 
     private final int[][] grid = {
@@ -37,7 +39,18 @@ public class GameMap extends JPanel {
         this.assetLoader = new AssetLoader();
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
 
+        animationTimer = new Timer(120, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                animationTick++;
+                repaint();
+            }
+        });
+        animationTimer.start();
+    }
 
+    public Timer getAnimationTimer() {
+        return animationTimer;
     }
 
     @Override

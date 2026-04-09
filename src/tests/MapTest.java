@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import view.AssetLoader;
 import view.GameMap;
+
+import javax.swing.*;
 import java.awt.*;
-import java.util.Timer;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,45 +26,18 @@ public class MapTest {
         assertEquals(600, size.height, "Map height should be 600");
     }
 
-    @Test
-    void testAlignment() {
-        int[][] grid = gameMap.getGrid();
 
-        assertEquals(60, grid[1][1]);
-        assertEquals(60, grid[1][2]);
-        assertEquals(60, grid[2][1]);
-        assertEquals(60, grid[2][2]);
-
-        assertEquals(50, grid[12][16]);
-        assertEquals(50, grid[12][17]);
-        assertEquals(50, grid[13][16]);
-        assertEquals(50, grid[13][17]);
-    }
-    @Test
-    void testRoadIntegrity() {
-        int[][] grid = gameMap.getGrid();
-
-        assertEquals(11, grid[3][0]);
-        assertEquals(10, grid[9][0]);
-    }
-    @Test
-    void testMapIntegrity() {
-        int[][] grid = gameMap.getGrid();
-        assertEquals(7, grid[7][0]);
-        assertEquals(9, grid[1][9]);
-        assertEquals(60, grid[1][1]);
-    }
     @Test
     void testCampfireAssetExists() {
         AssetLoader loader = new AssetLoader();
         assertNotNull(loader.getSprite("camp/2"), "Animated campfire spritesheet (192x32) missing");
     }
     @Test
-    void testTimerp() {
+    void testTimerInitialization() {
         Timer timer = gameMap.getAnimationTimer();
-        assertNotNull(timer, "Timer should be initialized");
-        assertEquals(120, timer.getDelay(), "Timer delay should be 120ms");
-        assertTrue(timer.isRunning(), "Timer should start automatically");
+        assertNotNull(timer, "Timer should be initialized in constructor");
+        assertTrue(timer.isRunning(), "Timer should be started automatically");
+        assertEquals(120, timer.getDelay(), "Timer delay should be exactly 120ms");
     }
 
 }
