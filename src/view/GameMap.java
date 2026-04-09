@@ -132,6 +132,11 @@ public class GameMap extends JPanel {
         g2d.fillOval(x - TILE_SIZE / 2, y - TILE_SIZE / 2, TILE_SIZE * 2, TILE_SIZE * 2);
     }
 
+    public int calculateFrameX(int tick, int sheetWidth, int totalFrames) {
+        int frameWidth = sheetWidth / totalFrames;
+        return (tick % totalFrames) * frameWidth;
+    }
+
     private void drawFire(Graphics g, String path, int x, int y) {
         BufferedImage sheet = assetLoader.getSprite(path);
         if (sheet != null) {
