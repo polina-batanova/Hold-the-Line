@@ -97,6 +97,24 @@ public class GameMap extends JPanel {
                 if (grid[r][c] == 60) draw(g, "camp/1", x, y);
                 if (grid[r][c] == 63) drawMirrored(g, "camp/1", x, y);
                 if (grid[r][c] == 61) drawFlag(g, x, y);
+                if (grid[r][c] == 62) {
+                    int offsetX = 0;
+                    int offsetY = 0;
+                    String fireAsset;
+
+                    if (r < 5) {
+                        offsetX = 15;
+                        offsetY = -10;
+                        fireAsset = "camp/2";
+                    } else {
+                        offsetX = 20;
+                        offsetY = -10;
+                        fireAsset = "camp/3";
+                    }
+
+                    drawFireGlow(g2d, x + offsetX, y + offsetY);
+                    drawFire(g, fireAsset, x + offsetX, y + offsetY);
+                }
 
 
 
@@ -104,6 +122,31 @@ public class GameMap extends JPanel {
 
         }
     }
+    private void drawFireGlow(Graphics2D g2d, int x, int y) {
+        RadialGradientPaint glow = new RadialGradientPaint(
+                x + TILE_SIZE / 2, y + TILE_SIZE / 2, TILE_SIZE,
+                new float[]{0f, 1f},
+                new Color[]{new Color(255, 150, 0, 80), new Color(255, 100, 0, 0)}
+        );
+        g2d.setPaint(glow);
+        g2d.fillOval(x - TILE_SIZE / 2, y - TILE_SIZE / 2, TILE_SIZE * 2, TILE_SIZE * 2);
+    }
+
+    private void drawFire(Graphics g, String path, int x, int y) {
+        BufferedImage sheet = assetLoader.getSprite(path);
+        if (sheet != null) {
+            int frames = 6;
+            int w = sheet.getWidth() / frames;
+            int h = sheet.getHeight();
+            int current = (animationTick % frames);
+            BufferedImage frame = sheet.getSubimage(current * w, 0, w, h);
+
+            g.drawImage(frame, x, y, 32, 32, null);
+        }
+    }
+
+
+
     private void drawFlag(Graphics g, int x, int y) {
         BufferedImage sheet = assetLoader.getSprite("flag/1");
         if (sheet != null) {
