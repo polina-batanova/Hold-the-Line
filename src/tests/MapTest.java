@@ -42,6 +42,13 @@ public class MapTest {
         assertEquals(11, grid[3][0]);
         assertEquals(10, grid[9][0]);
     }
+    @Test
+    void testMapIntegrity() {
+        int[][] grid = gameMap.getGrid();
+        assertEquals(7, grid[7][0]);
+        assertEquals(9, grid[1][9]);
+        assertEquals(60, grid[1][1]);
+    }
 
 }
 
