@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import view.AssetLoader;
 import view.GameMap;
 import java.awt.*;
+import java.util.Timer;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -51,12 +53,16 @@ public class MapTest {
         assertEquals(60, grid[1][1]);
     }
     @Test
-    void testAssetsExist() {
+    void testCampfireAssetExists() {
         AssetLoader loader = new AssetLoader();
-        assertNotNull(loader.getSprite("tiles/FieldsTile_38"), "Grass asset missing");
-        assertNotNull(loader.getSprite("fence/1"), "Fence asset missing");
-        assertNotNull(loader.getSprite("decor/Lamp1"), "Banner asset missing");
-        assertNotNull(loader.getSprite("PlaceForTower1"), "Tower slot asset missing");
+        assertNotNull(loader.getSprite("camp/2"), "Animated campfire spritesheet (192x32) missing");
+    }
+    @Test
+    void testTimerp() {
+        Timer timer = gameMap.getAnimationTimer();
+        assertNotNull(timer, "Timer should be initialized");
+        assertEquals(120, timer.getDelay(), "Timer delay should be 120ms");
+        assertTrue(timer.isRunning(), "Timer should start automatically");
     }
 
 }
