@@ -79,9 +79,47 @@ public class GameMap extends JPanel {
                 if (grid[r][c] == 9) {
                     draw(g, "placeholders/PlaceForTower1", x, y);
                 }
+                if (grid[r][c] == 7) draw(g, "fence/1", x, y);
+
+                if (grid[r][c] == 10) {
+                    int bushVar = (r + c * 7) % 6 + 1;
+                    draw(g, "bushes/" + bushVar, x, y);
+                }
+
+                if (grid[r][c] == 15) {
+                    int rockVariant = (r * 3 + c * 7) % 10 + 1;
+                    draw(g, "rocks/" + rockVariant, x + 3, y + 3);
+                }
+
+                if (grid[r][c] == 11) draw(g, "trees/Tree1", x, y);
+                if (grid[r][c] == 12) draw(g, "trees/Tree2", x, y);
+
+                if (grid[r][c] == 60) draw(g, "camp/1", x, y);
+                if (grid[r][c] == 63) drawMirrored(g, "camp/1", x, y);
+                if (grid[r][c] == 61) drawFlag(g, x, y);
+
+
 
             }
 
+        }
+    }
+    private void drawFlag(Graphics g, int x, int y) {
+        BufferedImage sheet = assetLoader.getSprite("flag/1");
+        if (sheet != null) {
+            int frames = 6;
+            int w = sheet.getWidth() / frames;
+            int h = sheet.getHeight();
+            int current = (animationTick % frames);
+            BufferedImage frame = sheet.getSubimage(current * w, 0, w, h);
+            g.drawImage(frame, x + 15, y - 22, 32, 64, null);
+        }
+    }
+    private void drawMirrored(Graphics g, String key, int x, int y) {
+        BufferedImage img = assetLoader.getSprite(key);
+        if (img != null) {
+            g.drawImage(img, x + TILE_SIZE, y, x, y + TILE_SIZE,
+                    0, 0, img.getWidth(), img.getHeight(), null);
         }
     }
 
@@ -109,5 +147,8 @@ public class GameMap extends JPanel {
         if (img != null) {
             g.drawImage(img, x, y, TILE_SIZE, TILE_SIZE, null);
         }
+    }
+    public int[][] getGrid() {
+        return grid;
     }
 }

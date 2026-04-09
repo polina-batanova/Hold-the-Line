@@ -39,10 +39,14 @@ public class MapTest {
         assertFalse(gameMap.shouldDrawShadow(0));
     }
     @Test
-    void testObjects() {
-        assertEquals(2, gameMap.getBushVariant(0, 1), "Bush variant at (0,1) should be 2");
-        assertEquals(7, gameMap.getRockVariant(0, 18), "Rock variant at (0,18) should be 7");
+    void testGridObjectPlacement() {
+        int[][] grid = gameMap.getGrid();
+        assertEquals(7, grid[7][0], "Fence ID 7 should be at row 7, col 0");
+        assertEquals(9, grid[2][10], "Tower Placeholder ID 9 should be at row 2, col 10");
+        assertEquals(11, grid[6][0], "Tree ID 11 should be at row 6, col 0");
+        assertEquals(61, grid[3][3], "Flag ID 61 should be at row 3, col 3");
     }
+
 
 }
 
