@@ -68,6 +68,24 @@ public class GameMap extends JPanel {
         }
     }
 
+    private void renderPath(Graphics g, int type, int x, int y) {
+        switch (type) {
+            case 1: draw(g, "tiles/FieldsTile_02", x, y); break;
+            case 2: draw(g, "tiles/FieldsTile_14", x, y); break;
+            case 3: draw(g, "tiles/FieldsTile_06", x, y); break;
+            case 4: draw(g, "tiles/FieldsTile_12", x, y); break;
+            case 5: draw(g, "tiles/FieldsTile_19", x, y); break;
+            case 6: draw(g, "tiles/FieldsTile_24", x, y); break;
+        }
+    }
+
+    private void draw(Graphics g, String key, int x, int y) {
+        BufferedImage img = assetLoader.getSprite(key);
+        if (img != null) {
+            g.drawImage(img, x, y, TILE_SIZE, TILE_SIZE, null);
+        }
+    }
+
     private void renderBases(Graphics g, int r, int c, int x, int y) {
         int type = grid[r][c];
         if (type == 50 || type == 60) {
