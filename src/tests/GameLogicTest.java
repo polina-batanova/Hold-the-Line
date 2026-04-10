@@ -96,4 +96,11 @@ public class GameLogicTest {
         assertEquals(initialMoney - 50, player1.getMoney(), "Money should be deducted from player1");
         assertEquals(1, activeMobs.size(), "One mob should be registered");
     }
+    @Test
+    void testMobMovement() {
+        Mob m = new Mob("tier1", 7, 0, 50, 1, 10, 10, 50);
+        int initialCol = m.getCol();
+        m.setCol(m.getCol() + 1);
+        assertEquals(initialCol + 1, m.getCol(), "Mob should have moved forward one column");
+    }
 }

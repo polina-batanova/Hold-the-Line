@@ -265,4 +265,16 @@ public class GameMap extends JPanel {
 
         return grid;
     }
+
+    private void drawMobShop(Graphics g) {
+        BufferedImage sheet = assetLoader.getSprite("mobs/tier1/D_Idle");
+        if (sheet != null) {
+            int w = sheet.getWidth() / 4;
+            int h = sheet.getHeight();
+            BufferedImage icon = sheet.getSubimage(0, 0, w, h);
+            g.drawImage(icon, 50, 500, 40, 40, null);
+            g.setColor(Color.WHITE);
+            g.drawString("$50", 60, 555);
+        }
+    }
 }
