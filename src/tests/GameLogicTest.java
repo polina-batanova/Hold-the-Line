@@ -3,6 +3,7 @@ package tests;
 import entities.Mob;
 import entities.Tower;
 import model.GameManager;
+import model.GameState;
 import model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,5 +62,26 @@ public class GameLogicTest {
 
         assertEquals(80, player1.getHealth(), "Base HP should drop by mob damage amount.");
         assertTrue(activeMobs.isEmpty(), "Mob should be removed after damaging base.");
+    }
+
+    @Test
+    void testRoundTransition() {
+        manager.startGame();
+        manager.nextTurn();
+        manager.startRound();
+
+        assertEquals(GameState.ROUND_EXECUTION, manager.getState());
+
+        Mob target = new Mob("Orc", 1, 1, 10, 1, 10, 5, 5);
+        activeMobs.add(target);
+
+        activeMobs.remove(target);
+
+        if (manager.getState() == GameState.ROUND_EXECUTION && activeMobs.isEmpty()) {
+            manager.nextTurn();
+        }
+
+        assertEquals(GameState.PLAYER1_TURN, manager.getState(),
+                "Should return to Player 1 Move Phase after all mobs are cleared.");
     }
 }
