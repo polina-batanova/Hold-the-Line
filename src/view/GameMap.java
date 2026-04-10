@@ -1,10 +1,15 @@
 package view;
 
+import entities.Mob;
+import entities.Tower;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GameMap extends JPanel {
@@ -12,11 +17,19 @@ public class GameMap extends JPanel {
     private final int ROWS = 15;
     private final int COLS = 20;
 
+    private java.util.List<Tower> currentTowers = new ArrayList<>();
+    private java.util.List<Mob> currentMobs = new ArrayList<>();
+
     private final AssetLoader assetLoader;
     private int animationTick = 0;
     private final Timer animationTimer;
 
 
+    public void updateData(List<Tower> towers, List<Mob> mobs) {
+        this.currentTowers = towers;
+        this.currentMobs = mobs;
+        repaint();
+    }
     private final int[][] grid = {
             {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,15,15},
             {10,63,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15},
@@ -115,8 +128,14 @@ public class GameMap extends JPanel {
                     drawFireGlow(g2d, x + offsetX, y + offsetY);
                     drawFire(g, fireAsset, x + offsetX, y + offsetY);
                 }
+                for (Tower tower : currentTowers) {
+                    renderTower(g, tower);
+                }
 
-
+                // 3. Draw Mobs
+                for (Mob mob : currentMobs) {
+                    renderMob(g, mob);
+                }
 
             }
 
@@ -196,7 +215,37 @@ public class GameMap extends JPanel {
             g.drawImage(img, x, y, TILE_SIZE, TILE_SIZE, null);
         }
     }
+    private void renderTower(Graphics g, Tower t) {
+        BufferedImage sheet = assetLoader.getSprite("towers/idle/1");
+
+        if (sheet != null) {
+            int frames = 4;
+            int w = sheet.getWidth() / frames;
+            int h = sheet.getHeight();
+            int currentFrame = (animationTick % frames);
+
+            BufferedImage frame = sheet.getSubimage(currentFrame * w, 0, w, h);
+
+            int x = t.getCol() * TILE_SIZE;
+            int yOffset = h - TILE_SIZE;
+            int y = (t.getRow() * TILE_SIZE) - yOffset;
+
+            g.drawImage(frame, x, y, TILE_SIZE, h, null);
+        }
+    }
+
+    private void renderMob(Graphics g, Mob m) {
+
+        g.setColor(Color.RED);
+        g.fillOval(m.getCol() * TILE_SIZE + 10, m.getRow() * TILE_SIZE + 10, 20, 20);
+    }
+
+    public int getTileSize() {
+        return TILE_SIZE;
+    }
+
     public int[][] getGrid() {
+
         return grid;
     }
 }
