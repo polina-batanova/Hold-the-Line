@@ -5,9 +5,12 @@ import entities.Tower;
 import model.GameManager;
 import model.Player;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GameLogicTest {
     private Player player1;
@@ -23,5 +26,25 @@ public class GameLogicTest {
         manager = new GameManager(player1, player2);
         placedTowers = new ArrayList<>();
         activeMobs = new ArrayList<>();
+    }
+
+    @Test
+    void testTowerPlacementCostsMoney() {
+        int towerCost = 150;
+
+        boolean success = player1.spendMoney(towerCost);
+        if (success) {
+            placedTowers.add(new Tower("Archer", 5, 5, 3, 10, towerCost));
+        }
+        assertEquals(1, placedTowers.size(), "Tower should be placed when player has money.");
+        assertEquals(50, player1.getMoney(), "Player money should decrease by cost.");
+
+
+        boolean failure = player1.spendMoney(towerCost);
+        if (failure) {
+            placedTowers.add(new Tower("Archer", 6, 6, 3, 10, towerCost));
+        }
+
+        assertEquals(1, placedTowers.size(), "Second tower should NOT be placed if player is broke.");
     }
 }
