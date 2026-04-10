@@ -84,4 +84,16 @@ public class GameLogicTest {
         assertEquals(GameState.PLAYER1_TURN, manager.getState(),
                 "Should return to Player 1 Move Phase after all mobs are cleared.");
     }
+    @Test
+    void testMobPurchasing() {
+        int initialMoney = player1.getMoney();
+        int mobCost = 50;
+
+        if (player1.spendMoney(mobCost)) {
+            Mob queuedMob = new Mob("tier1", 0, 0, 50, 1, 10, 10, mobCost);
+            activeMobs.add(queuedMob);
+        }
+        assertEquals(initialMoney - 50, player1.getMoney(), "Money should be deducted from player1");
+        assertEquals(1, activeMobs.size(), "One mob should be registered");
+    }
 }

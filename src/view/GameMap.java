@@ -236,8 +236,25 @@ public class GameMap extends JPanel {
 
     private void renderMob(Graphics g, Mob m) {
 
-        g.setColor(Color.RED);
-        g.fillOval(m.getCol() * TILE_SIZE + 10, m.getRow() * TILE_SIZE + 10, 20, 20);
+        String tier = "tier1";
+        BufferedImage sheet = assetLoader.getSprite("mobs/" + tier + "/walk");
+
+        if (sheet != null) {
+            int frameCount = 6; // Your S_Attack.png has 6 frames
+            int frameWidth = sheet.getWidth() / frameCount;
+            int frameHeight = sheet.getHeight();
+
+            // Slow down the animation so they don't look like they're sprinting
+            int currentFrame = (animationTick / 2) % frameCount;
+
+            BufferedImage frame = sheet.getSubimage(currentFrame * frameWidth, 0, frameWidth, frameHeight);
+
+            // Draw the mob
+            int x = m.getCol() * TILE_SIZE;
+            int y = m.getRow() * TILE_SIZE;
+
+            g.drawImage(frame, x, y, TILE_SIZE, TILE_SIZE, null);
+        }
     }
 
     public int getTileSize() {
