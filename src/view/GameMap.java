@@ -17,19 +17,23 @@ public class GameMap extends JPanel {
     private final int ROWS = 15;
     private final int COLS = 20;
 
-    private java.util.List<Tower> currentTowers = new ArrayList<>();
-    private java.util.List<Mob> currentMobs = new ArrayList<>();
+    // Dynamic lists provided by the GameController
+    private List<Tower> currentTowers = new ArrayList<>();
+    private List<Mob> currentMobs = new ArrayList<>();
 
     private final AssetLoader assetLoader;
+    // Global tick used to sync all sprite animations
     private int animationTick = 0;
     private final Timer animationTimer;
 
-
-    public void updateData(List<Tower> towers, List<Mob> mobs) {
-        this.currentTowers = towers;
-        this.currentMobs = mobs;
-        repaint();
-    }
+    /**
+     * 0: Grass,
+     * 1-6: Path,
+     * 9: Tower Slot,
+     * 10: Bushes,
+     * 11: Trees,
+     * 60-63: Camps/Decoration
+     */
     private final int[][] grid = {
             {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,15,15},
             {10,63,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15},
@@ -62,13 +66,12 @@ public class GameMap extends JPanel {
         animationTimer.start();
     }
 
-    public Timer getAnimationTimer() {
-        return animationTimer;
+    public void updateData(List<Tower> towers, List<Mob> mobs) {
+        this.currentTowers = towers;
+        this.currentMobs = mobs;
+        repaint();
     }
 
-    public boolean shouldDrawShadow(int tileType) {
-        return tileType == 10 || tileType == 11 || tileType == 15 || tileType == 7;
-    }
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -76,86 +79,115 @@ public class GameMap extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        // Draw the Static Grid (Tiles, Paths, Decorations)
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
                 int x = c * TILE_SIZE;
                 int y = r * TILE_SIZE;
 
+                // Always draw a grass tile
                 draw(g, "tiles/FieldsTile_38", x, y);
 
                 if (shouldDrawShadow(grid[r][c])) {
                     drawSimpleShadow(g2d, x, y);
                 }
 
+                // Render path logic (Dirt roads)
                 renderPath(g, grid[r][c], x, y);
 
-                if (grid[r][c] == 9) {
-                    draw(g, "placeholders/PlaceForTower1", x, y);
-                }
+                // Render specific objects based on ID
+                if (grid[r][c] == 9) draw(g, "placeholders/PlaceForTower1", x, y);
                 if (grid[r][c] == 7) draw(g, "fence/1", x, y);
-
-                if (grid[r][c] == 10) {
-                    int bushVar = (r + c * 7) % 6 + 1;
-                    draw(g, "bushes/" + bushVar, x, y);
-                }
-
-                if (grid[r][c] == 15) {
-                    int rockVariant = (r * 3 + c * 7) % 10 + 1;
-                    draw(g, "rocks/" + rockVariant, x + 3, y + 3);
-                }
-
+                if (grid[r][c] == 10) draw(g, "bushes/" + ((r + c * 7) % 6 + 1), x, y);
+                if (grid[r][c] == 15) draw(g, "rocks/" + ((r * 3 + c * 7) % 10 + 1), x + 3, y + 3);
                 if (grid[r][c] == 11) draw(g, "trees/Tree1", x, y);
                 if (grid[r][c] == 12) draw(g, "trees/Tree2", x, y);
-
                 if (grid[r][c] == 60) draw(g, "camp/1", x, y);
                 if (grid[r][c] == 63) drawMirrored(g, "camp/1", x, y);
                 if (grid[r][c] == 61) drawFlag(g, x, y);
                 if (grid[r][c] == 62) {
-                    int offsetX = 0;
-                    int offsetY = 0;
-                    String fireAsset;
-
-                    if (r < 5) {
-                        offsetX = 15;
-                        offsetY = -10;
-                        fireAsset = "camp/2";
-                    } else {
-                        offsetX = 20;
-                        offsetY = -10;
-                        fireAsset = "camp/3";
-                    }
-
+                    int offsetX = (r < 5) ? 15 : 20;
+                    int offsetY = -10;
+                    String fireAsset = (r < 5) ? "camp/2" : "camp/3";
                     drawFireGlow(g2d, x + offsetX, y + offsetY);
                     drawFire(g, fireAsset, x + offsetX, y + offsetY);
                 }
-                for (Tower tower : currentTowers) {
-                    renderTower(g, tower);
-                }
-
-                // 3. Draw Mobs
-                for (Mob mob : currentMobs) {
-                    renderMob(g, mob);
-                }
-
             }
+        }
 
+        // Draw Active Game Objects
+        for (Tower tower : currentTowers) {
+            renderTower(g, tower);
+        }
+
+        for (Mob mob : currentMobs) {
+            renderMob(g, mob);
+        }
+
+        // Draw UI Overlay Elements
+        drawEndTurnButton(g);
+    }
+
+    // Red 'End Turn' button
+    private void drawEndTurnButton(Graphics g) {
+        g.setColor(new Color(200, 50, 50));
+        g.fillRoundRect(710, 5, 80, 40, 10, 10);
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 12));
+        g.drawString("END TURN", 720, 30);
+    }
+
+    // Renders an animated walking mob
+    private void renderMob(Graphics g, Mob m) {
+        String tier = "tier1";
+        BufferedImage sheet = assetLoader.getSprite("mobs/" + tier + "/walk");
+        if (sheet != null) {
+            int frameCount = 6;
+            int frameWidth = sheet.getWidth() / frameCount;
+            int frameHeight = sheet.getHeight();
+
+            int currentFrame = (animationTick / 2) % frameCount;
+            BufferedImage frame = sheet.getSubimage(currentFrame * frameWidth, 0, frameWidth, frameHeight);
+
+            int x = m.getCol() * TILE_SIZE;
+            int y = m.getRow() * TILE_SIZE;
+
+            g.drawImage(frame, x, y, TILE_SIZE, TILE_SIZE, null);
         }
     }
-    private void drawFireGlow(Graphics2D g2d, int x, int y) {
-        RadialGradientPaint glow = new RadialGradientPaint(
-                x + TILE_SIZE / 2, y + TILE_SIZE / 2, TILE_SIZE,
-                new float[]{0f, 1f},
-                new Color[]{new Color(255, 150, 0, 80), new Color(255, 100, 0, 0)}
-        );
-        g2d.setPaint(glow);
-        g2d.fillOval(x - TILE_SIZE / 2, y - TILE_SIZE / 2, TILE_SIZE * 2, TILE_SIZE * 2);
+
+    // Renders an animated tower
+    private void renderTower(Graphics g, Tower t) {
+        BufferedImage sheet = assetLoader.getSprite("towers/idle/1");
+        if (sheet != null) {
+            int frames = 4;
+            int w = sheet.getWidth() / frames;
+            int h = sheet.getHeight();
+            int currentFrame = (animationTick % frames);
+            BufferedImage frame = sheet.getSubimage(currentFrame * w, 0, w, h);
+
+            int x = t.getCol() * TILE_SIZE;
+            int yOffset = h - TILE_SIZE;
+            int y = (t.getRow() * TILE_SIZE) - yOffset;
+            g.drawImage(frame, x, y, TILE_SIZE, h, null);
+        }
     }
 
-    public int calculateFrameX(int tick, int sheetWidth, int totalFrames) {
-        int frameWidth = sheetWidth / totalFrames;
-        return (tick % totalFrames) * frameWidth;
+    private void renderPath(Graphics g, int type, int x, int y) {
+        switch (type) {
+            case 1:
+                draw(g, "tiles/FieldsTile_02", x, y);
+                draw(g, "tiles/FieldsTile_14", x, y);
+                break;
+            case 2: draw(g, "tiles/FieldsTile_08", x, y); break;
+            case 3: draw(g, "tiles/FieldsTile_05", x, y); break;
+            case 4: draw(g, "tiles/FieldsTile_11", x, y); break;
+            case 5: draw(g, "tiles/FieldsTile_18", x, y); break;
+            case 6: draw(g, "tiles/FieldsTile_23", x, y); break;
+        }
     }
 
+    // Helper for drawing animated fire
     private void drawFire(Graphics g, String path, int x, int y) {
         BufferedImage sheet = assetLoader.getSprite(path);
         if (sheet != null) {
@@ -164,13 +196,11 @@ public class GameMap extends JPanel {
             int h = sheet.getHeight();
             int current = (animationTick % frames);
             BufferedImage frame = sheet.getSubimage(current * w, 0, w, h);
-
             g.drawImage(frame, x, y, 32, 32, null);
         }
     }
 
-
-
+    // Logic for camp flags
     private void drawFlag(Graphics g, int x, int y) {
         BufferedImage sheet = assetLoader.getSprite("flag/1");
         if (sheet != null) {
@@ -182,99 +212,51 @@ public class GameMap extends JPanel {
             g.drawImage(frame, x + 15, y - 22, 32, 64, null);
         }
     }
+
+    // Method for creating a glowing orange light effect around campfires */
+    private void drawFireGlow(Graphics2D g2d, int x, int y) {
+        RadialGradientPaint glow = new RadialGradientPaint(
+                x + TILE_SIZE / 2, y + TILE_SIZE / 2, TILE_SIZE,
+                new float[]{0f, 1f},
+                new Color[]{new Color(255, 150, 0, 80), new Color(255, 100, 0, 0)}
+        );
+        g2d.setPaint(glow);
+        g2d.fillOval(x - TILE_SIZE / 2, y - TILE_SIZE / 2, TILE_SIZE * 2, TILE_SIZE * 2);
+    }
+
+    // Method for drawing mirrored camp
     private void drawMirrored(Graphics g, String key, int x, int y) {
         BufferedImage img = assetLoader.getSprite(key);
         if (img != null) {
-            g.drawImage(img, x + TILE_SIZE, y, x, y + TILE_SIZE,
-                    0, 0, img.getWidth(), img.getHeight(), null);
+            g.drawImage(img, x + TILE_SIZE, y, x, y + TILE_SIZE, 0, 0, img.getWidth(), img.getHeight(), null);
         }
     }
 
-    private void renderPath(Graphics g, int type, int x, int y) {
-        switch (type) {
-            case 1:
-                draw(g, "tiles/FieldsTile_02", x, y);
-                draw(g, "tiles/FieldsTile_14", x, y);
-                break;
-            case 2:
-                draw(g, "tiles/FieldsTile_08", x, y);
-                break;
-            case 3: draw(g, "tiles/FieldsTile_05", x, y); break;
-            case 4: draw(g, "tiles/FieldsTile_11", x, y); break;
-            case 5: draw(g, "tiles/FieldsTile_18", x, y); break;
-            case 6: draw(g, "tiles/FieldsTile_23", x, y); break;
-        }
-    }
     private void drawSimpleShadow(Graphics2D g2d, int x, int y) {
         g2d.setColor(new Color(0, 0, 0, 50));
         g2d.fillOval(x + 5, y + TILE_SIZE - 12, TILE_SIZE - 10, 8);
     }
+
+    // Helper to draw a static sprite
     private void draw(Graphics g, String key, int x, int y) {
         BufferedImage img = assetLoader.getSprite(key);
         if (img != null) {
             g.drawImage(img, x, y, TILE_SIZE, TILE_SIZE, null);
         }
     }
-    private void renderTower(Graphics g, Tower t) {
-        BufferedImage sheet = assetLoader.getSprite("towers/idle/1");
 
-        if (sheet != null) {
-            int frames = 4;
-            int w = sheet.getWidth() / frames;
-            int h = sheet.getHeight();
-            int currentFrame = (animationTick % frames);
-
-            BufferedImage frame = sheet.getSubimage(currentFrame * w, 0, w, h);
-
-            int x = t.getCol() * TILE_SIZE;
-            int yOffset = h - TILE_SIZE;
-            int y = (t.getRow() * TILE_SIZE) - yOffset;
-
-            g.drawImage(frame, x, y, TILE_SIZE, h, null);
-        }
+    public boolean shouldDrawShadow(int tileType) {
+        return tileType == 10 || tileType == 11 || tileType == 15 || tileType == 7;
+    }
+    public Timer getAnimationTimer() {
+        return animationTimer;
     }
 
-    private void renderMob(Graphics g, Mob m) {
+    public int getTileSize() { return TILE_SIZE; }
+    public int[][] getGrid() { return grid; }
 
-        String tier = "tier1";
-        BufferedImage sheet = assetLoader.getSprite("mobs/" + tier + "/walk");
-
-        if (sheet != null) {
-            int frameCount = 6; // Your S_Attack.png has 6 frames
-            int frameWidth = sheet.getWidth() / frameCount;
-            int frameHeight = sheet.getHeight();
-
-            // Slow down the animation so they don't look like they're sprinting
-            int currentFrame = (animationTick / 2) % frameCount;
-
-            BufferedImage frame = sheet.getSubimage(currentFrame * frameWidth, 0, frameWidth, frameHeight);
-
-            // Draw the mob
-            int x = m.getCol() * TILE_SIZE;
-            int y = m.getRow() * TILE_SIZE;
-
-            g.drawImage(frame, x, y, TILE_SIZE, TILE_SIZE, null);
-        }
-    }
-
-    public int getTileSize() {
-        return TILE_SIZE;
-    }
-
-    public int[][] getGrid() {
-
-        return grid;
-    }
-
-    private void drawMobShop(Graphics g) {
-        BufferedImage sheet = assetLoader.getSprite("mobs/tier1/D_Idle");
-        if (sheet != null) {
-            int w = sheet.getWidth() / 4;
-            int h = sheet.getHeight();
-            BufferedImage icon = sheet.getSubimage(0, 0, w, h);
-            g.drawImage(icon, 50, 500, 40, 40, null);
-            g.setColor(Color.WHITE);
-            g.drawString("$50", 60, 555);
-        }
+    public int calculateFrameX(int tick, int sheetWidth, int totalFrames) {
+        int frameWidth = sheetWidth / totalFrames;
+        return (tick % totalFrames) * frameWidth;
     }
 }

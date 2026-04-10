@@ -59,6 +59,17 @@ public class Mob extends Entity {
     public void setCol(int col) {
         this.col = col;
     }
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public int getCol() {
+        return this.col;
+    }
+
+    public int getRow() {
+        return this.row;
+    }
 
     // reduces mob's hp by the given amount
     public void takeDamage(int damage) {

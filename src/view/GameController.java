@@ -18,17 +18,18 @@ public class GameController {
     private final GameManager gameManager;
     private final List<Tower> placedTowers = new ArrayList<>();
     private final List<Mob> activeMobs = new ArrayList<>();
-
     private final List<Mob> queuedMobs = new ArrayList<>();
 
-    private final int startRow = 7;
+    private final int startRow = 4;
     private final int startCol = 0;
-
     private Timer gameLoop;
 
     public GameController(GameMap map, GameManager manager) {
         this.gameMap = map;
         this.gameManager = manager;
+
+        this.activeMobs.clear();
+        this.queuedMobs.clear();
         setupControls();
         startGameLoop();
     }
@@ -37,14 +38,22 @@ public class GameController {
         gameMap.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
 
-                if (e.getX() >= 50 && e.getX() <= 90 && e.getY() >= 500 && e.getY() <= 540) {
-                    handleMouseClick(e.getX(), e.getY());
-                } else {
-                    int col = e.getX() / gameMap.getTileSize();
-                    int row = e.getY() / gameMap.getTileSize();
+                if (x >= 710 && x <= 790 && y >= 5 && y <= 45) {
+                    handleEndTurn();
+                }
+                else if (x >= 50 && x <= 90 && y >= 500 && y <= 540) {
+                    purchaseMob("tier1");
+                }
+                else {
+                    int col = x / gameMap.getTileSize();
+                    int row = y / gameMap.getTileSize();
 
-                    if (row < gameMap.getGrid().length && col < gameMap.getGrid()[0].length) {
+                    if (row >= 0 && row < gameMap.getGrid().length &&
+                            col >= 0 && col < gameMap.getGrid()[0].length) {
+
                         if (gameMap.getGrid()[row][col] == 9 && isPlayerTurn()) {
                             attemptTowerPlacement(row, col);
                         }
@@ -54,18 +63,21 @@ public class GameController {
         });
     }
 
-    private void attemptTowerPlacement(int row, int col) {
-        Player current = gameManager.getCurrentPlayer();
+    private void handleEndTurn() {
+        if (gameManager.getState() == GameState.PLAYER1_TURN) {
+            gameManager.nextTurn();
+            System.out.println("Switching to Player 2");
+        } else if (gameManager.getState() == GameState.PLAYER2_TURN) {
+            activeMobs.addAll(queuedMobs);
+            queuedMobs.clear();
 
-        int cost = 100;
-        if (current.spendMoney(cost)) {
-            placedTowers.add(new Tower("Basic Tower", row, col, 3, 10, cost));
-            gameMap.repaint();
+            gameManager.startRound();
+            System.out.println("Battle Phase Started!");
         }
     }
 
     private void startGameLoop() {
-        gameLoop = new Timer(100, e -> {
+        gameLoop = new Timer(400, e -> {
             if (gameManager.getState() == GameState.ROUND_EXECUTION) {
                 processExecutionPhase();
             }
@@ -74,64 +86,68 @@ public class GameController {
         gameLoop.start();
     }
 
-    public void startRound() {
-        activeMobs.addAll(queuedMobs);
-        queuedMobs.clear();
-        gameManager.startRound();
-    }
-
     private void processExecutionPhase() {
+        if (activeMobs.isEmpty()) {
+            gameManager.setState(GameState.PLAYER1_TURN);
+            return;
+        }
+
         Iterator<Mob> it = activeMobs.iterator();
         while (it.hasNext()) {
             Mob mob = it.next();
+            int r = mob.getRow();
+            int c = mob.getCol();
 
-            mob.setCol(mob.getCol() + 1);
+            if (r < 0 || r >= 15 || c < 0 || c >= 20) {
+                it.remove();
+                continue;
+            }
+
+            int tileType = gameMap.getGrid()[r][c];
+
+            if (tileType == 1 || tileType == 3 || tileType == 5) {
+                mob.setCol(c + 1);
+            }
+            else if (tileType == 2 || tileType == 4 || tileType == 6) {
+                mob.setRow(r + 1);
+            }
+            else {
+                mob.setCol(c + 1);
+            }
 
             for (Tower t : placedTowers) {
-                if (t.isInRange(mob)) mob.takeDamage(t.getDamage());
+                if (t.isInRange(mob)) {
+                    mob.takeDamage(t.getDamage());
+                }
             }
 
             if (mob.isDead()) {
                 gameManager.getPlayer1().addMoney(mob.getBounty());
                 it.remove();
-            }
-            else if (mob.getCol() >= 19) {
+            } else if (mob.getCol() >= 20 || mob.getRow() >= 15) {
                 gameManager.getPlayer1().takeDamage(mob.getDamage());
                 it.remove();
-                checkGameOver();
             }
-        }
-
-        if (activeMobs.isEmpty()) {
-            gameManager.nextTurn();
         }
     }
 
-    private void checkGameOver() {
-        if (gameManager.getPlayer1().getHealth() <= 0) {
-            gameLoop.stop();
+    private void attemptTowerPlacement(int row, int col) {
+        Player current = gameManager.getCurrentPlayer();
+        if (current.spendMoney(100)) {
+            placedTowers.add(new Tower("Basic Tower", row, col, 3, 10, 100));
+        }
+    }
+
+    private void purchaseMob(String tier) {
+        Player current = gameManager.getCurrentPlayer();
+        if (current.spendMoney(50)) {
+            queuedMobs.add(new Mob(tier, startRow, startCol, 50, 1, 10, 10, 50));
+            System.out.println("Mob added to queue!");
         }
     }
 
     private boolean isPlayerTurn() {
         GameState s = gameManager.getState();
         return s == GameState.PLAYER1_TURN || s == GameState.PLAYER2_TURN;
-    }
-
-    public void handleMouseClick(int x, int y) {
-        if (x >= 50 && x <= 90 && y >= 500 && y <= 540) {
-            purchaseMob("tier1");
-        }
-    }
-
-    private void purchaseMob(String tier) {
-        Player current = gameManager.getCurrentPlayer();
-        int cost = 50;
-
-        if (current.spendMoney(cost)) {
-            Mob m = new Mob(tier, startRow, startCol, 50, 1, 10, 10, cost);
-            queuedMobs.add(m);
-            System.out.println("Mob added to queue. Money left: " + current.getMoney());
-        }
     }
 }

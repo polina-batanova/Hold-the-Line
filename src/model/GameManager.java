@@ -61,11 +61,12 @@ public class GameManager {
     public int getCurrentRound() {
         return currentRound;
     }
+
+    public void setState(GameState state) {
+        this.state = state;
+    }
+
     public Player getCurrentPlayer() {
-        if (state == GameState.PLAYER1_TURN) {
-            return player1;
-        } else {
-            return player2;
-        }
+        return (state == GameState.PLAYER1_TURN) ? player1 : player2;
     }
 }
