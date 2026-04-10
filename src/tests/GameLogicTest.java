@@ -30,10 +30,12 @@ public class GameLogicTest {
         activeMobs = new ArrayList<>();
     }
 
+    // Verifies that towers only place if the player has enough money
     @Test
     void testTowerPlacement() {
         int towerCost = 150;
 
+        // Test successful purchase
         boolean success = player1.spendMoney(towerCost);
         if (success) {
             placedTowers.add(new Tower("Archer", 5, 5, 3, 10, towerCost));
@@ -41,7 +43,7 @@ public class GameLogicTest {
         assertEquals(1, placedTowers.size(), "Tower should be placed when player has money.");
         assertEquals(50, player1.getMoney(), "Player money should decrease by cost.");
 
-
+        // Test failed purchase (insufficient funds)
         boolean failure = player1.spendMoney(towerCost);
         if (failure) {
             placedTowers.add(new Tower("Archer", 6, 6, 3, 10, towerCost));
@@ -50,6 +52,7 @@ public class GameLogicTest {
         assertEquals(1, placedTowers.size(), "Second tower should NOT be placed if player is broke.");
     }
 
+    // Checks if a player's HP correctly decreases
     @Test
     void testReducesHP() {
         Mob infiltrator = new Mob("Goblin", 2, 19, 50, 1, 20, 10, 10);
@@ -64,6 +67,7 @@ public class GameLogicTest {
         assertTrue(activeMobs.isEmpty(), "Mob should be removed after damaging base.");
     }
 
+    // Ensures the game correctly cycles from Battle Phase back to the Build Phase
     @Test
     void testRoundTransition() {
         manager.startGame();
@@ -84,6 +88,7 @@ public class GameLogicTest {
         assertEquals(GameState.PLAYER1_TURN, manager.getState(),
                 "Should return to Player 1 Move Phase after all mobs are cleared.");
     }
+    // Tests the shop logic for buying units
     @Test
     void testMobPurchasing() {
         int initialMoney = player1.getMoney();
@@ -96,6 +101,7 @@ public class GameLogicTest {
         assertEquals(initialMoney - 50, player1.getMoney(), "Money should be deducted from player1");
         assertEquals(1, activeMobs.size(), "One mob should be registered");
     }
+    // Tests the movement of mobs
     @Test
     void testMobMovement() {
         Mob m = new Mob("tier1", 7, 0, 50, 1, 10, 10, 50);
