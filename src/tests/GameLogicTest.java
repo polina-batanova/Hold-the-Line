@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameLogicTest {
     private Player player1;
@@ -29,7 +30,7 @@ public class GameLogicTest {
     }
 
     @Test
-    void testTowerPlacementCostsMoney() {
+    void testTowerPlacement() {
         int towerCost = 150;
 
         boolean success = player1.spendMoney(towerCost);
@@ -46,5 +47,19 @@ public class GameLogicTest {
         }
 
         assertEquals(1, placedTowers.size(), "Second tower should NOT be placed if player is broke.");
+    }
+
+    @Test
+    void testReducesHP() {
+        Mob infiltrator = new Mob("Goblin", 2, 19, 50, 1, 20, 10, 10);
+        activeMobs.add(infiltrator);
+
+        if (infiltrator.getCol() >= 19) {
+            player1.takeDamage(infiltrator.getDamage());
+            activeMobs.remove(infiltrator);
+        }
+
+        assertEquals(80, player1.getHealth(), "Base HP should drop by mob damage amount.");
+        assertTrue(activeMobs.isEmpty(), "Mob should be removed after damaging base.");
     }
 }
