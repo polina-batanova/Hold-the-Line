@@ -163,6 +163,15 @@ public class GameMap extends JPanel {
         // Gold display
         g2d.setColor(new Color(255, 215, 0));
         g2d.drawString("Gold: " + currentGold, 10, hudY + 40);
+
+        // Round counter (center)
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("Round " + currentRound, 370, hudY + 30);
+
+        // HP displays
+        g2d.setColor(new Color(100, 200, 255));
+        g2d.drawString("P1 HP: " + p1Health, 230, hudY + 20);
+        g2d.drawString("P2 HP: " + p2Health, 230, hudY + 40);
     }
 
 
