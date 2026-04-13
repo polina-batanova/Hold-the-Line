@@ -23,7 +23,7 @@ public class GameController {
 
     // path definitions
     // player 1 road (top)
-    static final int[][] PATH_TOP = {
+    public static final int[][] PATH_TOP = {
             {4,19},{4,18},{4,17},{4,16},
             {3,16},
             {2,16},{2,15},{2,14},{2,13},{2,12},
@@ -36,7 +36,7 @@ public class GameController {
     };
 
     // player 2 road (bot)
-    static final int[][] PATH_BOTTOM = {
+    public static final int[][] PATH_BOTTOM = {
             {12,0},{12,1},{12,2},{12,3},
             {11,3},
             {10,3},{10,4},{10,5},{10,6},{10,7},
