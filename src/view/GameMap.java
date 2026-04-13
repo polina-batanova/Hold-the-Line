@@ -183,6 +183,17 @@ public class GameMap extends JPanel {
             g2d.setFont(new Font("Arial", Font.BOLD, 12));
             g2d.drawString("BUY MOB - 50g", 510, hudY + 28);
         }
+
+        // Button for ending turn
+        if (!isBattlePhase) {
+            g2d.setColor(new Color(200, 50, 50));
+            g2d.fillRoundRect(660, hudY + 5, 120, 35, 10, 10);
+            g2d.setColor(new Color(255, 100, 100));
+            g2d.drawRoundRect(660, hudY + 5, 120, 35, 10, 10);
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Arial", Font.BOLD, 12));
+            g2d.drawString("END TURN", 685, hudY + 28);
+        }
     }
 
 
