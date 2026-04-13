@@ -230,8 +230,21 @@ public class GameController {
             // check if mob reached enemy base
             else if (mob.hasReachedEnd()) {
                 // damage goes to the DEFENDING player's base
-                getDefender(mob).takeDamage(mob.getDamage());
+                Player defender = getDefender(mob);
+                defender.takeDamage(mob.getDamage());
                 it.remove();
+
+                // check if that killed the base
+                if (defender.getHealth() <= 0) {
+                    String winner = (defender == gameManager.getPlayer1())
+                            ? gameManager.getPlayer2().getName()
+                            : gameManager.getPlayer1().getName();
+                    System.out.println("GAME OVER! " + winner + " wins!");
+                    gameManager.setState(GameState.GAME_OVER);
+                    activeMobs.clear();
+                    gameLoop.stop();
+                    return;
+                }
             }
         }
     }
