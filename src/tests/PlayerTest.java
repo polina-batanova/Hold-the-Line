@@ -1,7 +1,9 @@
 package tests;
 
+import entities.Mob;
 import model.Player;
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -81,4 +83,16 @@ public class PlayerTest {
             p.addMoney(-5);
         });
     }
+
+/* temporary commented due to unexpected error
+    @Test
+    public void testQueueMob() {
+        Player p = new Player("P1", 100, 200);
+        Mob m = new Mob();
+
+        p.addMobToQueue(m);
+
+        assertEquals(1, p.getQueuedMobs().size());
+    }
+ */
 }

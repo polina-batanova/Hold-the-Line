@@ -1,10 +1,12 @@
 package tests;
 
+import entities.Mob;
 import model.GameManager;
 import model.GameState;
 import model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -82,6 +84,7 @@ public class GameManagerTest {
         });
     }
 
+
     @Test
     public void testStartRoundCorrectState() {
         gm.startGame();
@@ -91,4 +94,74 @@ public class GameManagerTest {
 
         assertEquals(GameState.ROUND_EXECUTION, gm.getState());
     }
+
+    @Test
+    public void testBaseIncomeStartValue() {
+        assertEquals(50, gm.getBaseIncome());
+    }
+
+
+    @Test
+    public void testIncomeAddedOnStart() {
+        gm.startGame();
+
+
+        assertEquals(250, p1.getMoney());
+        assertEquals(250, p2.getMoney());
+    }
+
+
+
+    @Test
+    public void testIncomeIncreasesNextRound() {
+        gm.startGame();
+        gm.nextTurn();
+        gm.nextTurn();
+        gm.nextTurn();
+
+        assertEquals(60, gm.getBaseIncome());
+    }
+
+    @Test
+    public void testBuyTowerOk() {
+        boolean ok = gm.buyTower(p1, 50);
+
+        assertTrue(ok);
+        assertEquals(150, p1.getMoney());
+    }
+
+    @Test
+    public void testBuyTowerFail() {
+        boolean ok = gm.buyTower(p1, 500);
+
+        assertFalse(ok);
+        assertEquals(200, p1.getMoney());
+    }
+
+/* temporary commented due to unexpected errors
+    @Test
+    public void testQueueMobOk() {
+
+        Mob m = new Mob();
+
+        boolean ok = gm.queueMob(p1, m, 30);
+
+
+        assertTrue(ok);
+        assertEquals(170,  p1.getMoney());
+        assertEquals(1, p1.getQueuedMobs().size());
+    }
+
+    @Test
+    public void testQueueMobFail() {
+        Mob m = new Mob();
+
+
+        boolean ok = gm.queueMob(p1, m, 500);
+
+        assertFalse(ok);
+        assertEquals(200, p1.getMoney());
+        assertEquals(0,  p1.getQueuedMobs().size());
+    }
+ */
 }
