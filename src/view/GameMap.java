@@ -17,6 +17,13 @@ public class GameMap extends JPanel {
     private final int ROWS = 15;
     private final int COLS = 20;
 
+    private String currentPlayerName = "";
+    private int currentGold = 0;
+    private int currentRound = 0;
+    private int p1Health = 100;
+    private int p2Health = 100;
+    private boolean isBattlePhase = false;
+
     // Dynamic lists provided by the GameController
     private List<Tower> currentTowers = new ArrayList<>();
     private List<Mob> currentMobs = new ArrayList<>();
