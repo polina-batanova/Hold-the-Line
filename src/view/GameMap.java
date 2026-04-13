@@ -216,9 +216,12 @@ public class GameMap extends JPanel {
         }
     }
 
+    // Draw a tower
     private void renderTower(Graphics g, Tower t) {
         BufferedImage sheet = assetLoader.getSprite("towers/idle/1");
         if (sheet != null) {
+
+            // Sprite dimensions
             int spriteWidth = 70;
             int spriteHeight = 130;
 
@@ -226,8 +229,10 @@ public class GameMap extends JPanel {
 
             BufferedImage frame = sheet.getSubimage(currentFrame * spriteWidth, 0, spriteWidth, spriteHeight);
 
+            // Calculate X position
             int x = (t.getCol() * TILE_SIZE) + (TILE_SIZE / 2) - (spriteWidth / 2);
 
+            // Calculate Y position
             int y = (t.getRow() * TILE_SIZE) + TILE_SIZE - spriteHeight;
 
             g.drawImage(frame, x, y, spriteWidth, spriteHeight, null);
