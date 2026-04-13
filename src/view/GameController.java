@@ -17,8 +17,10 @@ public class GameController {
     private final GameMap gameMap;
     private final GameManager gameManager;
     private final List<Tower> placedTowers = new ArrayList<>();
+
     // Mobs currently on the road
     private final List<Mob> activeMobs = new ArrayList<>();
+
     // Mobs bought but waiting for turn end
     private final List<Mob> queuedMobs = new ArrayList<>();
 
@@ -30,9 +32,9 @@ public class GameController {
     public GameController(GameMap map, GameManager manager) {
         this.gameMap = map;
         this.gameManager = manager;
-
         this.activeMobs.clear();
         this.queuedMobs.clear();
+
         setupControls();
         startGameLoop();
     }
@@ -147,7 +149,8 @@ public class GameController {
 
     // Tries to place a tower
     private void attemptTowerPlacement(int row, int col) {
-        // check if a tower is already at this spot
+
+        // Check if a tower is already at this spot
         for (Tower t : placedTowers) {
             if (t.getRow() == row && t.getCol() == col) {
                 JOptionPane.showMessageDialog(gameMap, "A tower is already here!");
@@ -158,6 +161,7 @@ public class GameController {
         int cost = 100;
         Player current = gameManager.getCurrentPlayer();
 
+        // Ask the player for confirmation
         int choice = JOptionPane.showConfirmDialog(
                 gameMap,
                 "Place a tower here?\nCost: " + cost + " gold\n\nYour gold: "
@@ -166,6 +170,7 @@ public class GameController {
                 JOptionPane.YES_NO_OPTION
         );
 
+        // If the player confirms, place the tower
         if (choice == JOptionPane.YES_OPTION) {
             if (current.spendMoney(cost)) {
                 placedTowers.add(new Tower("Archer", row, col, 3, 10, cost));
