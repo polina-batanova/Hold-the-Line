@@ -216,20 +216,21 @@ public class GameMap extends JPanel {
         }
     }
 
-    // Renders an animated tower
     private void renderTower(Graphics g, Tower t) {
         BufferedImage sheet = assetLoader.getSprite("towers/idle/1");
         if (sheet != null) {
-            int frames = 4;
-            int w = sheet.getWidth() / frames;
-            int h = sheet.getHeight();
-            int currentFrame = (animationTick % frames);
-            BufferedImage frame = sheet.getSubimage(currentFrame * w, 0, w, h);
+            int spriteWidth = 70;
+            int spriteHeight = 130;
 
-            int x = t.getCol() * TILE_SIZE;
-            int yOffset = h - TILE_SIZE;
-            int y = (t.getRow() * TILE_SIZE) - yOffset;
-            g.drawImage(frame, x, y, TILE_SIZE, h, null);
+            int currentFrame = 0;
+
+            BufferedImage frame = sheet.getSubimage(currentFrame * spriteWidth, 0, spriteWidth, spriteHeight);
+
+            int x = (t.getCol() * TILE_SIZE) + (TILE_SIZE / 2) - (spriteWidth / 2);
+
+            int y = (t.getRow() * TILE_SIZE) + TILE_SIZE - spriteHeight;
+
+            g.drawImage(frame, x, y, spriteWidth, spriteHeight, null);
         }
     }
 
