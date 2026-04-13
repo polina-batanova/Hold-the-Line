@@ -56,9 +56,9 @@ public class EntityTest {
         Mob mob = new Mob("Goblin", 3, 5, 50, 1, 10, 5, 30);
         assertEquals("Goblin", mob.getName());
         assertEquals(50, mob.getHp());
-        assertEquals(1,  mob.getSpeed());
+        assertEquals(1, mob.getSpeed());
         assertEquals(10, mob.getDamage());
-        assertEquals(5,  mob.getBounty());
+        assertEquals(5, mob.getBounty());
         assertEquals(30, mob.getCost());
     }
 
@@ -118,11 +118,11 @@ public class EntityTest {
     public void testTowerInitStats() {
         Tower tower = new Tower("Archer", 5, 5, 3, 15, 100);
         assertEquals("Archer", tower.getName());
-        assertEquals(3,   tower.getRange());
-        assertEquals(15,  tower.getDamage());
+        assertEquals(3, tower.getRange());
+        assertEquals(15, tower.getDamage());
         assertEquals(100, tower.getCost());
-        assertEquals(5,   tower.getRow());
-        assertEquals(5,   tower.getCol());
+        assertEquals(5, tower.getRow());
+        assertEquals(5, tower.getCol());
     }
 
     // tests that isInRange() returns true when mob with in tower attack range
@@ -163,5 +163,93 @@ public class EntityTest {
         assertThrows(IllegalArgumentException.class, () ->
                 new Tower("Archer", 5, 5, 3, 0, 100)
         );
+    }
+
+
+    // ====== MOVEMENT / PATH TESTS ======
+
+    private final int[][] testPath = {
+            {4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4}
+    };
+
+    // tests that mob starts at the first tile
+    @Test
+    public void testSpawnTile() {
+        Mob mob = new Mob("Goblin", testPath[0][0], testPath[0][1],
+                50, 1, 10, 5, 30, 1, testPath);
+        assertEquals(4, mob.getRow());
+        assertEquals(0, mob.getCol());
+        assertEquals(1, mob.getPlayerNumber());
+    }
+
+    // tests that mob at third tile
+    @Test
+    public void test3Steps() {
+        Mob mob = new Mob("Goblin", testPath[0][0], testPath[0][1],
+                50, 1, 10, 5, 30, 1, testPath);
+        mob.move();
+        mob.move();
+        assertEquals(4, mob.getRow());
+        assertEquals(2, mob.getCol());
+    }
+
+    // tests mob with speed 2
+    @Test
+    public void testSpeed2() {
+        Mob mob = new Mob("Goblin", testPath[0][0], testPath[0][1],
+                50, 2, 10, 5, 30, 1, testPath);
+        mob.move(); // should jump from index 0 to index 2
+        assertEquals(4, mob.getRow());
+        assertEquals(2, mob.getCol());
+    }
+
+    // test that mob reaches end after walking whole path
+    @Test
+    public void testWholePath() {
+        Mob mob = new Mob("Goblin", testPath[0][0], testPath[0][1],
+                50, 1, 10, 5, 30, 1, testPath);
+        // 4 moves to reach end
+        mob.move();
+        mob.move();
+        mob.move();
+        mob.move();
+        mob.move();
+        assertTrue(mob.hasReachedEnd());
+    }
+
+    // tests that move() does nothing after mob has reached the end
+    @Test
+    public void testMoveWholePath() {
+        Mob mob = new Mob("Goblin", testPath[0][0], testPath[0][1],
+                50, 1, 10, 5, 30, 1, testPath);
+        for (int i = 0; i < 10; i++) {
+            mob.move();
+        }
+        assertEquals(4, mob.getRow());
+        assertEquals(4, mob.getCol());
+        assertTrue(mob.hasReachedEnd());
+    }
+
+    // tests that mob with spawnDelay doesn't move
+    @Test
+    public void testDelay() {
+        Mob mob = new Mob("Goblin", testPath[0][0], testPath[0][1],
+                50, 1, 10, 5, 30, 1, testPath);
+        mob.setSpawnDelay(2);
+        mob.move();
+        assertEquals(0, mob.getCol());
+        mob.move();
+        assertEquals(0, mob.getCol());
+        mob.move();
+        assertEquals(1, mob.getCol());
+    }
+
+    // test that mob with no delay moves
+    @Test
+    public void testNoDelay() {
+        Mob mob = new Mob("Goblin", testPath[0][0], testPath[0][1],
+                50, 1, 10, 10, 50, 1, testPath);
+        mob.move();
+        assertEquals(1, mob.getCol());
     }
 }
