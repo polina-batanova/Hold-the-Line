@@ -5,6 +5,7 @@ public class GameManager {
     private Player player2;
     private GameState state;
     private int currentRound;
+    private int baseIncome;
 
     public GameManager(Player player1, Player player2) {
         if (player1 == null || player2 == null) {
@@ -15,11 +16,15 @@ public class GameManager {
         this.player2 = player2;
         this.state = GameState.NOT_STARTED;
         this.currentRound = 0;
+        this.baseIncome = 50;
     }
 
     public void startGame() {
-        currentRound = 1;
-        state = GameState.PLAYER1_TURN;
+        public void startGame() {
+            currentRound = 1;
+            giveRoundIncome();
+            state = GameState.PLAYER1_TURN;
+        }
     }
 
     public void nextTurn() {
@@ -32,6 +37,8 @@ public class GameManager {
                 break;
             case ROUND_EXECUTION:
                 currentRound++;
+                baseIncome += 10;
+                giveRoundIncome();
                 state = GameState.PLAYER1_TURN;
                 break;
             default:
@@ -68,5 +75,37 @@ public class GameManager {
 
     public Player getCurrentPlayer() {
         return (state == GameState.PLAYER1_TURN) ? player1 : player2;
+    }
+
+    public void giveRoundIncome() {
+        player1.addMoney(baseIncome);
+        player2.addMoney(baseIncome);
+    }
+
+
+
+    public boolean buyTower(Player p, int cost) {
+        if (p == null) {
+             throw new  IllegalArgumentException("Player cannot be null.");
+        }
+
+        return p.spendMoney(cost);
+    }
+
+    public boolean queueMob(Player p, Mob mob,  int cost) {
+        if (p == null  || mob == null) {
+            throw new IllegalArgumentException("Invalid input.");
+        }
+
+         if (p.spendMoney(cost)) {
+            p.addMobToQueue(mob);
+            return true;
+        }
+
+        return false;
+    }
+
+     public int getBaseIncome() {
+        return baseIncome;
     }
 }
