@@ -153,6 +153,16 @@ public class GameMap extends JPanel {
         g2d.fillRect(0, hudY, COLS * TILE_SIZE, 50);
 
         g2d.setFont(new Font("Arial", Font.BOLD, 13));
+        if (isBattlePhase) {
+            g2d.setColor(new Color(255, 80, 80));
+            g2d.drawString("⚔ BATTLE PHASE", 10, hudY + 20);
+        } else {
+            g2d.setColor(new Color(100, 255, 100));
+            g2d.drawString(currentPlayerName + "'s Turn", 10, hudY + 20);
+        }
+        // Gold display
+        g2d.setColor(new Color(255, 215, 0));
+        g2d.drawString("Gold: " + currentGold, 10, hudY + 40);
     }
 
 
