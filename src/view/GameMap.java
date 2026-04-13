@@ -134,6 +134,15 @@ public class GameMap extends JPanel {
         // Draw UI Overlay Elements
         drawEndTurnButton(g);
     }
+    public void updateHUD(String playerName, int gold, int round,
+                          int p1Hp, int p2Hp, boolean battlePhase) {
+        this.currentPlayerName = playerName;
+        this.currentGold = gold;
+        this.currentRound = round;
+        this.p1Health = p1Hp;
+        this.p2Health = p2Hp;
+        this.isBattlePhase = battlePhase;
+    }
 
     // Red 'End Turn' button
     private void drawEndTurnButton(Graphics g) {
