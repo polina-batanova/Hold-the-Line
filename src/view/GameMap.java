@@ -144,14 +144,17 @@ public class GameMap extends JPanel {
         this.isBattlePhase = battlePhase;
     }
 
-    // Red 'End Turn' button
-    private void drawEndTurnButton(Graphics g) {
-        g.setColor(new Color(200, 50, 50));
-        g.fillRoundRect(710, 5, 80, 40, 10, 10);
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 12));
-        g.drawString("END TURN", 720, 30);
+    private void drawHUD(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        int hudY = ROWS * TILE_SIZE - 50; // bottom bar Y position
+
+        // Dark semi-transparent bar across the bottom
+        g2d.setColor(new Color(0, 0, 0, 180));
+        g2d.fillRect(0, hudY, COLS * TILE_SIZE, 50);
+
+        g2d.setFont(new Font("Arial", Font.BOLD, 13));
     }
+
 
     // Renders an animated walking mob
     private void renderMob(Graphics g, Mob m) {
