@@ -17,6 +17,13 @@ public class GameMap extends JPanel {
     private final int ROWS = 15;
     private final int COLS = 20;
 
+    private String currentPlayerName = "";
+    private int currentGold = 0;
+    private int currentRound = 0;
+    private int p1Health = 100;
+    private int p2Health = 100;
+    private boolean isBattlePhase = false;
+
     // Dynamic lists provided by the GameController
     private List<Tower> currentTowers = new ArrayList<>();
     private List<Mob> currentMobs = new ArrayList<>();
@@ -125,17 +132,70 @@ public class GameMap extends JPanel {
         }
 
         // Draw UI Overlay Elements
-        drawEndTurnButton(g);
+        drawHUD(g);
+    }
+    public void updateHUD(String playerName, int gold, int round,
+                          int p1Hp, int p2Hp, boolean battlePhase) {
+        this.currentPlayerName = playerName;
+        this.currentGold = gold;
+        this.currentRound = round;
+        this.p1Health = p1Hp;
+        this.p2Health = p2Hp;
+        this.isBattlePhase = battlePhase;
     }
 
-    // Red 'End Turn' button
-    private void drawEndTurnButton(Graphics g) {
-        g.setColor(new Color(200, 50, 50));
-        g.fillRoundRect(710, 5, 80, 40, 10, 10);
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 12));
-        g.drawString("END TURN", 720, 30);
+    private void drawHUD(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        int hudY = ROWS * TILE_SIZE - 50; // bottom bar Y position
+
+        // Dark semi-transparent bar across the bottom
+        g2d.setColor(new Color(0, 0, 0, 180));
+        g2d.fillRect(0, hudY, COLS * TILE_SIZE, 50);
+
+        g2d.setFont(new Font("Arial", Font.BOLD, 13));
+        if (isBattlePhase) {
+            g2d.setColor(new Color(255, 80, 80));
+            g2d.drawString("⚔ BATTLE PHASE", 10, hudY + 20);
+        } else {
+            g2d.setColor(new Color(100, 255, 100));
+            g2d.drawString(currentPlayerName + "'s Turn", 10, hudY + 20);
+        }
+        // Gold display
+        g2d.setColor(new Color(255, 215, 0));
+        g2d.drawString("Gold: " + currentGold, 10, hudY + 40);
+
+        // Round counter (center)
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("Round " + currentRound, 370, hudY + 30);
+
+        // HP displays
+        g2d.setColor(new Color(100, 200, 255));
+        g2d.drawString("P1 HP: " + p1Health, 230, hudY + 20);
+        g2d.drawString("P2 HP: " + p2Health, 230, hudY + 40);
+
+        // Button for buying mobs
+        if (!isBattlePhase) {
+            g2d.setColor(new Color(50, 130, 50));
+            g2d.fillRoundRect(500, hudY + 5, 120, 35, 10, 10);
+            g2d.setColor(new Color(80, 200, 80));
+            g2d.drawRoundRect(500, hudY + 5, 120, 35, 10, 10);
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Arial", Font.BOLD, 12));
+            g2d.drawString("BUY MOB - 50g", 510, hudY + 28);
+        }
+
+        // Button for ending turn
+        if (!isBattlePhase) {
+            g2d.setColor(new Color(200, 50, 50));
+            g2d.fillRoundRect(660, hudY + 5, 120, 35, 10, 10);
+            g2d.setColor(new Color(255, 100, 100));
+            g2d.drawRoundRect(660, hudY + 5, 120, 35, 10, 10);
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Arial", Font.BOLD, 12));
+            g2d.drawString("END TURN", 685, hudY + 28);
+        }
     }
+
 
     // Renders an animated walking mob
     private void renderMob(Graphics g, Mob m) {
@@ -156,20 +216,26 @@ public class GameMap extends JPanel {
         }
     }
 
-    // Renders an animated tower
+    // Draw a tower
     private void renderTower(Graphics g, Tower t) {
         BufferedImage sheet = assetLoader.getSprite("towers/idle/1");
         if (sheet != null) {
-            int frames = 4;
-            int w = sheet.getWidth() / frames;
-            int h = sheet.getHeight();
-            int currentFrame = (animationTick % frames);
-            BufferedImage frame = sheet.getSubimage(currentFrame * w, 0, w, h);
 
-            int x = t.getCol() * TILE_SIZE;
-            int yOffset = h - TILE_SIZE;
-            int y = (t.getRow() * TILE_SIZE) - yOffset;
-            g.drawImage(frame, x, y, TILE_SIZE, h, null);
+            // Sprite dimensions
+            int spriteWidth = 70;
+            int spriteHeight = 130;
+
+            int currentFrame = 0;
+
+            BufferedImage frame = sheet.getSubimage(currentFrame * spriteWidth, 0, spriteWidth, spriteHeight);
+
+            // Calculate X position
+            int x = (t.getCol() * TILE_SIZE) + (TILE_SIZE / 2) - (spriteWidth / 2);
+
+            // Calculate Y position
+            int y = (t.getRow() * TILE_SIZE) + TILE_SIZE - spriteHeight;
+
+            g.drawImage(frame, x, y, spriteWidth, spriteHeight, null);
         }
     }
 
