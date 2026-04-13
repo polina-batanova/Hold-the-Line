@@ -132,7 +132,7 @@ public class GameMap extends JPanel {
         }
 
         // Draw UI Overlay Elements
-        drawEndTurnButton(g);
+        drawHUD(g);
     }
     public void updateHUD(String playerName, int gold, int round,
                           int p1Hp, int p2Hp, boolean battlePhase) {
