@@ -82,6 +82,8 @@ public class GameController {
         }
     }
 
+
+
     private void startGameLoop() {
         gameLoop = new Timer(400, e -> {
             if (gameManager.getState() == GameState.ROUND_EXECUTION) {
@@ -145,9 +147,32 @@ public class GameController {
 
     // Tries to place a tower
     private void attemptTowerPlacement(int row, int col) {
+        // check if a tower is already at this spot
+        for (Tower t : placedTowers) {
+            if (t.getRow() == row && t.getCol() == col) {
+                JOptionPane.showMessageDialog(gameMap, "A tower is already here!");
+                return;
+            }
+        }
+
+        int cost = 100;
         Player current = gameManager.getCurrentPlayer();
-        if (current.spendMoney(100)) {
-            placedTowers.add(new Tower("Basic Tower", row, col, 3, 10, 100));
+
+        int choice = JOptionPane.showConfirmDialog(
+                gameMap,
+                "Place a tower here?\nCost: " + cost + " gold\n\nYour gold: "
+                        + current.getMoney(),
+                "Tower Placement",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (choice == JOptionPane.YES_OPTION) {
+            if (current.spendMoney(cost)) {
+                placedTowers.add(new Tower("Archer", row, col, 3, 10, cost));
+                System.out.println("Tower placed at (" + row + "," + col + ")");
+            } else {
+                JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
+            }
         }
     }
 
