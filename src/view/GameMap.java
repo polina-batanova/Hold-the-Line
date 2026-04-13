@@ -172,6 +172,17 @@ public class GameMap extends JPanel {
         g2d.setColor(new Color(100, 200, 255));
         g2d.drawString("P1 HP: " + p1Health, 230, hudY + 20);
         g2d.drawString("P2 HP: " + p2Health, 230, hudY + 40);
+
+        // Button for buying mobs
+        if (!isBattlePhase) {
+            g2d.setColor(new Color(50, 130, 50));
+            g2d.fillRoundRect(500, hudY + 5, 120, 35, 10, 10);
+            g2d.setColor(new Color(80, 200, 80));
+            g2d.drawRoundRect(500, hudY + 5, 120, 35, 10, 10);
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Arial", Font.BOLD, 12));
+            g2d.drawString("BUY MOB - 50g", 510, hudY + 28);
+        }
     }
 
 
