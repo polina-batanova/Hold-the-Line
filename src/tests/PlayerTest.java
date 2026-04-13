@@ -1,8 +1,9 @@
 package tests;
 
+import entities.Mob;
 import model.Player;
 import org.junit.jupiter.api.Test;
-import model.Mob;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,5 +1,7 @@
 package model;
 
+import entities.Mob;
+
 import java.util.LinkedList;
 import java.util.Queue;
 

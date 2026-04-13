@@ -1,5 +1,7 @@
 package model;
 
+import entities.Mob;
+
 public class GameManager {
     private Player player1;
     private Player player2;
@@ -20,11 +22,9 @@ public class GameManager {
     }
 
     public void startGame() {
-        public void startGame() {
-            currentRound = 1;
-            giveRoundIncome();
-            state = GameState.PLAYER1_TURN;
-        }
+        currentRound = 1;
+        giveRoundIncome();
+        state = GameState.PLAYER1_TURN;
     }
 
     public void nextTurn() {
@@ -92,7 +92,7 @@ public class GameManager {
         return p.spendMoney(cost);
     }
 
-    public boolean queueMob(Player p, Mob mob,  int cost) {
+    public boolean queueMob(Player p, Mob mob, int cost) {
         if (p == null  || mob == null) {
             throw new IllegalArgumentException("Invalid input.");
         }
