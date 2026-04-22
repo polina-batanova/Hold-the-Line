@@ -289,6 +289,16 @@ public class GameMap extends JPanel {
         g2d.fillRect(barX, barY, fill, barHeight);
     }
 
+    public static Color hpBarColor(double pct) {
+        if (pct > 0.5) {
+            return new Color(60, 200, 60);   // green
+        } else if (pct >= 0.25) {
+            return new Color(230, 200, 50);  // yellow
+        } else {
+            return new Color(220, 50, 50);   // red
+        }
+    }
+
     // Draw a tower
     private void renderTower(Graphics g, Tower t) {
         String spriteKey = spriteKeyForLevel(t.getLevel());
