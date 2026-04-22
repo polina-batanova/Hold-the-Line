@@ -252,4 +252,24 @@ public class EntityTest {
         mob.move();
         assertEquals(1, mob.getCol());
     }
+
+    @Test
+    public void testTowerLevel() {
+        Tower t = new Tower("Archer", 0, 0, 3, 5, 100);
+        assertEquals(1, t.getLevel());
+        assertFalse(t.isMaxLevel());
+    }
+
+    @Test
+    public void testUpgradeCost() {
+        Tower t = new Tower("Archer", 0, 0, 3, 5, 100);
+
+        // level 1 -> 2 should cost 75 (level * 75)
+        assertEquals(75, t.getUpgradeCost());
+        t.upgrade();
+
+        // level 2 -> 3 should cost 150
+        assertEquals(2, t.getLevel());
+        assertEquals(150, t.getUpgradeCost());
+    }
 }
