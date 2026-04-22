@@ -245,6 +245,14 @@ public class GameMap extends JPanel {
         g.drawImage(frame, x, y, drawWidth, drawHeight, null);
     }
 
+    public static int frameCountForLevel(int level) {
+        if (level <= 1) {
+            return 4;
+        } else {
+            return 6;
+        }
+    }
+
     // Returns the sprite for a given tower level
     public static String spriteKeyForLevel(int level) {
         if (level <= 1) {
