@@ -143,17 +143,37 @@ public class GameController {
 
     // Tries to place a tower
     private void attemptTowerPlacement(int row, int col) {
+        Player current = gameManager.getCurrentPlayer();
 
-        // Check if a tower is already at this spot
+        // If a tower already exists on this tile, show an upgrade dialog instead.
         for (Tower t : placedTowers) {
             if (t.getRow() == row && t.getCol() == col) {
-                JOptionPane.showMessageDialog(gameMap, "A tower is already here!");
+                if (t.isMaxLevel()) {
+                    JOptionPane.showMessageDialog(gameMap, "This tower is already at max level!");
+                    return;
+                }
+                int upgradeCost = t.getUpgradeCost();
+                int nextLevel = t.getLevel() + 1;
+                int upgradeChoice = JOptionPane.showConfirmDialog(
+                        gameMap,
+                        "Upgrade to Level " + nextLevel + "?\nCost: " + upgradeCost + " gold\n\nYour gold: "
+                                + current.getMoney(),
+                        "Tower Upgrade",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (upgradeChoice == JOptionPane.YES_OPTION) {
+                    if (current.spendMoney(upgradeCost)) {
+                        t.upgrade();
+                        System.out.println("Tower upgraded to level " + t.getLevel());
+                    } else {
+                        JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
+                    }
+                }
                 return;
             }
         }
 
         int cost = 100;
-        Player current = gameManager.getCurrentPlayer();
 
         // Ask the player for confirmation
         int choice = JOptionPane.showConfirmDialog(
@@ -167,7 +187,8 @@ public class GameController {
         // If the player confirms, place the tower
         if (choice == JOptionPane.YES_OPTION) {
             if (current.spendMoney(cost)) {
-                placedTowers.add(new Tower("Archer", row, col, 3, 10, cost));
+                // starts at level 1 with damage=5, range=3 per Area 2 scaling
+                placedTowers.add(new Tower("Archer", row, col, 3, 5, cost));
                 System.out.println("Tower placed at (" + row + "," + col + ")");
             } else {
                 JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
