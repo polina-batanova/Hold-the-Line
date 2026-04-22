@@ -4,9 +4,12 @@ package entities;
 // extends Entity for shared position and name
 public class Tower extends Entity {
 
+    public static final int MAX_LEVEL = 3;
+
     private int range; // attack range
     private int damage; // dmg per hit
     private int cost; // cost to place
+    private int level; // upgrade level, starts at 1
 
     // constructs a tower with all stats
     public Tower(String name, int row, int col, int range, int damage, int cost) {
@@ -23,6 +26,7 @@ public class Tower extends Entity {
         this.range  = range;
         this.damage = damage;
         this.cost   = cost;
+        this.level  = 1;
     }
 
     public int getRange() {
@@ -35,6 +39,37 @@ public class Tower extends Entity {
 
     public int getCost() {
         return cost;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    // true when tower has reached the final upgrade level
+    public boolean isMaxLevel() {
+        return level >= MAX_LEVEL;
+    }
+
+    // to reach the next level player needs gold
+    public int getUpgradeCost() {
+        if (isMaxLevel()) {
+            throw new IllegalStateException("Tower is already at max level.");
+        }
+        return level * 75;
+    }
+
+    // raises the level by 1
+    public void upgrade() {
+        if (isMaxLevel()) {
+            throw new IllegalStateException("Tower is already at max level.");
+        }
+        level++;
+        if (level == 2) {
+            this.damage += 3;
+        } else if (level == 3) {
+            this.damage += 4;
+            this.range  += 1;
+        }
     }
 
     // checks if mob in a tower's attack range
