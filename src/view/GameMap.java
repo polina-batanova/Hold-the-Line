@@ -137,6 +137,10 @@ public class GameMap extends JPanel {
 
         // Draw UI Overlay Elements
         drawHUD(g);
+
+        if (isGameOver) {
+            drawGameOver((Graphics2D) g);
+        }
     }
     public void updateHUD(String playerName, int gold, int round,
                           int p1Hp, int p2Hp, boolean battlePhase) {
