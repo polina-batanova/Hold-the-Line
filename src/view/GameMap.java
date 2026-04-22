@@ -245,6 +245,17 @@ public class GameMap extends JPanel {
         g.drawImage(frame, x, y, drawWidth, drawHeight, null);
     }
 
+    // Returns the sprite for a given tower level
+    public static String spriteKeyForLevel(int level) {
+        if (level <= 1) {
+            return "towers/idle/2";   // small wooden tower
+        } else if (level == 2) {
+            return "towers/idle/5";   // medium stone tower
+        } else {
+            return "towers/idle/7";   // full castle
+        }
+    }
+
     private void renderPath(Graphics g, int type, int x, int y) {
         switch (type) {
             case 1:
