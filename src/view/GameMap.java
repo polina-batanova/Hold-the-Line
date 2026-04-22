@@ -252,6 +252,9 @@ public class GameMap extends JPanel {
     private void renderMob(Graphics g, Mob m) {
         String tier = "tier1";
         BufferedImage sheet = assetLoader.getSprite("mobs/" + tier + "/walk");
+        int drawX = m.getCol() * TILE_SIZE;
+        int drawY = m.getRow() * TILE_SIZE;
+
         if (sheet != null) {
             int frameCount = 6;
             int frameWidth = sheet.getWidth() / frameCount;
@@ -260,11 +263,10 @@ public class GameMap extends JPanel {
             int currentFrame = (animationTick / 2) % frameCount;
             BufferedImage frame = sheet.getSubimage(currentFrame * frameWidth, 0, frameWidth, frameHeight);
 
-            int x = m.getCol() * TILE_SIZE;
-            int y = m.getRow() * TILE_SIZE;
-
-            g.drawImage(frame, x, y, TILE_SIZE, TILE_SIZE, null);
+            g.drawImage(frame, drawX, drawY, TILE_SIZE, TILE_SIZE, null);
         }
+
+        drawMobHpBar((Graphics2D) g, m, drawX, drawY);
     }
 
     // Draw a tower

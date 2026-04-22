@@ -5,6 +5,7 @@ package entities;
 public class Mob extends Entity {
 
     private int hp;
+    private final int maxHp;
     private int speed;
     private int damage; // amount of base hp deducted
     private int bounty; // reward on mob's death
@@ -45,6 +46,7 @@ public class Mob extends Entity {
             throw new IllegalArgumentException("Mob cost cannot be negative.");
         }
         this.hp           = hp;
+        this.maxHp        = hp;
         this.speed        = speed;
         this.damage       = damage;
         this.bounty       = bounty;
@@ -55,6 +57,9 @@ public class Mob extends Entity {
         this.spawnDelay   = 0;
     }
 
+    public int getMaxHp() {
+        return maxHp;
+    }
     // movement
     public void move() {
         if (path == null || hasReachedEnd()) return;
