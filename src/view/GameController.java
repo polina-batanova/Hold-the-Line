@@ -262,6 +262,7 @@ public class GameController {
                             : gameManager.getPlayer1().getName();
                     System.out.println("GAME OVER! " + winner + " wins!");
                     gameManager.setState(GameState.GAME_OVER);
+                    gameMap.setGameOver(winner);
                     activeMobs.clear();
                     gameLoop.stop();
                     return;
