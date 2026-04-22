@@ -218,25 +218,31 @@ public class GameMap extends JPanel {
 
     // Draw a tower
     private void renderTower(Graphics g, Tower t) {
-        BufferedImage sheet = assetLoader.getSprite("towers/idle/1");
-        if (sheet != null) {
+        String spriteKey = spriteKeyForLevel(t.getLevel());
+        int frameCount = frameCountForLevel(t.getLevel());
 
-            // Sprite dimensions
-            int spriteWidth = 70;
-            int spriteHeight = 130;
-
-            int currentFrame = 0;
-
-            BufferedImage frame = sheet.getSubimage(currentFrame * spriteWidth, 0, spriteWidth, spriteHeight);
-
-            // Calculate X position
-            int x = (t.getCol() * TILE_SIZE) + (TILE_SIZE / 2) - (spriteWidth / 2);
-
-            // Calculate Y position
-            int y = (t.getRow() * TILE_SIZE) + TILE_SIZE - spriteHeight;
-
-            g.drawImage(frame, x, y, spriteWidth, spriteHeight, null);
+        BufferedImage sheet = assetLoader.getSprite(spriteKey);
+        if (sheet == null) {
+            return;
         }
+
+        // Compute frame dimensions from the sheet itself so we don't hard-code pixels.
+        int sheetFrameWidth  = sheet.getWidth()  / Math.max(1, frameCount);
+        int sheetFrameHeight = sheet.getHeight();
+
+        int currentFrame = (animationTick / 2) % Math.max(1, frameCount);
+        BufferedImage frame = sheet.getSubimage(
+                currentFrame * sheetFrameWidth, 0, sheetFrameWidth, sheetFrameHeight);
+
+        // Rendered tower size on the map
+        int drawWidth  = 70;
+        int drawHeight = 130;
+
+        // Center the sprite on the tower tile, anchored to the bottom of the tile.
+        int x = (t.getCol() * TILE_SIZE) + (TILE_SIZE / 2) - (drawWidth / 2);
+        int y = (t.getRow() * TILE_SIZE) + TILE_SIZE - drawHeight;
+
+        g.drawImage(frame, x, y, drawWidth, drawHeight, null);
     }
 
     private void renderPath(Graphics g, int type, int x, int y) {
