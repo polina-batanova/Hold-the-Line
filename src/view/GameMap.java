@@ -24,6 +24,10 @@ public class GameMap extends JPanel {
     private int p2Health = 100;
     private boolean isBattlePhase = false;
 
+    // Game-over overlay state
+    private boolean isGameOver = false;
+    private String winnerName = "";
+
     // Dynamic lists provided by the GameController
     private List<Tower> currentTowers = new ArrayList<>();
     private List<Mob> currentMobs = new ArrayList<>();
@@ -136,6 +140,10 @@ public class GameMap extends JPanel {
     }
     public void updateHUD(String playerName, int gold, int round,
                           int p1Hp, int p2Hp, boolean battlePhase) {
+        // HUD stops updating during game-over
+        if (isGameOver) {
+            return;
+        }
         this.currentPlayerName = playerName;
         this.currentGold = gold;
         this.currentRound = round;
@@ -143,6 +151,17 @@ public class GameMap extends JPanel {
         this.p2Health = p2Hp;
         this.isBattlePhase = battlePhase;
     }
+
+    // Marks the game as over and stores the winner's display name.
+    public void setGameOver(String winner) {
+        if (winner == null || winner.isBlank()) {
+            throw new IllegalArgumentException("Winner name cannot be blank or null.");
+        }
+        this.isGameOver = true;
+        this.winnerName = winner;
+        repaint();
+    }
+
 
     private void drawHUD(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
