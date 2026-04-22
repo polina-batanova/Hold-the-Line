@@ -161,7 +161,13 @@ public class GameMap extends JPanel {
         this.winnerName = winner;
         repaint();
     }
+    public boolean isGameOver() {
+        return isGameOver;
+    }
 
+    public String getWinnerName() {
+        return winnerName;
+    }
 
     private void drawHUD(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
