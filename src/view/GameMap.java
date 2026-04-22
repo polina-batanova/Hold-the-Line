@@ -169,6 +169,32 @@ public class GameMap extends JPanel {
         return winnerName;
     }
 
+    private void drawGameOver(Graphics2D g2d) {
+        int w = COLS * TILE_SIZE;
+        int h = ROWS * TILE_SIZE;
+
+        // Semi-transparent black overlay
+        g2d.setColor(new Color(0, 0, 0, 150));
+        g2d.fillRect(0, 0, w, h);
+
+        // "GAME OVER" heading
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Arial", Font.BOLD, 36));
+        FontMetrics fm1 = g2d.getFontMetrics();
+        String title = "GAME OVER";
+        int titleX = (w - fm1.stringWidth(title)) / 2;
+        int titleY = (h / 2) - 30;
+        g2d.drawString(title, titleX, titleY);
+
+        // Winner text
+        g2d.setFont(new Font("Arial", Font.PLAIN, 24));
+        FontMetrics fm2 = g2d.getFontMetrics();
+        String winnerLine = winnerName + " wins!";
+        int winnerX = (w - fm2.stringWidth(winnerLine)) / 2;
+        int winnerY = (h / 2) + 20;
+        g2d.drawString(winnerLine, winnerX, winnerY);
+    }
+
     private void drawHUD(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         int hudY = ROWS * TILE_SIZE - 50; // bottom bar Y position
