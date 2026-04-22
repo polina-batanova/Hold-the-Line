@@ -272,4 +272,11 @@ public class EntityTest {
         assertEquals(2, t.getLevel());
         assertEquals(150, t.getUpgradeCost());
     }
+    @Test
+    public void testTowerMaxLevel() {
+        Tower t = new Tower("Archer", 0, 0, 3, 5, 100);
+        t.upgrade();
+        t.upgrade();
+        assertTrue(t.isMaxLevel());
+    }
 }
