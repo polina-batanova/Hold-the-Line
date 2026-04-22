@@ -269,6 +269,26 @@ public class GameMap extends JPanel {
         drawMobHpBar((Graphics2D) g, m, drawX, drawY);
     }
 
+    private void drawMobHpBar(Graphics2D g2d, Mob m, int drawX, int drawY) {
+        int barWidth = TILE_SIZE;
+        int barHeight = 2;
+        int barX = drawX;
+        int barY = drawY - 4;
+
+        // Background (dark)
+        g2d.setColor(new Color(0, 0, 0, 180));
+        g2d.fillRect(barX, barY, barWidth, barHeight);
+
+        // Foreground fill width = currentHp / maxHp
+        double pct = (m.getMaxHp() <= 0) ? 0.0 : (double) m.getHp() / m.getMaxHp();
+        if (pct < 0) pct = 0;
+        if (pct > 1) pct = 1;
+        int fill = (int) Math.round(barWidth * pct);
+
+        g2d.setColor(hpBarColor(pct));
+        g2d.fillRect(barX, barY, fill, barHeight);
+    }
+
     // Draw a tower
     private void renderTower(Graphics g, Tower t) {
         String spriteKey = spriteKeyForLevel(t.getLevel());
