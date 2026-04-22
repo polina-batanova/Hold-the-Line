@@ -3,6 +3,9 @@ package tests;
 import entities.Mob;
 import entities.Tower;
 import org.junit.jupiter.api.Test;
+import view.GameMap;
+
+import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -278,5 +281,12 @@ public class EntityTest {
         t.upgrade();
         t.upgrade();
         assertTrue(t.isMaxLevel());
+    }
+    @Test
+    public void testHpBarColor() {
+        assertEquals(new Color(60, 200, 60), GameMap.hpBarColor(0.51)); // Green
+        assertEquals(new Color(230, 200, 50), GameMap.hpBarColor(0.50)); // Yellow (boundary)
+        assertEquals(new Color(230, 200, 50), GameMap.hpBarColor(0.25)); // Yellow (boundary)
+        assertEquals(new Color(220, 50, 50), GameMap.hpBarColor(0.24)); // Red
     }
 }
