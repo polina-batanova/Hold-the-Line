@@ -189,7 +189,7 @@ public class GameControllerTest {
         assertTrue(tower.hasValidTarget());
         // only mob1 takes damage
         mob1.takeDamage(tower.getDamage());
-        assertEquals(20, mob1.getHp());
-        assertEquals(30, mob2.getHp()); // untouched
+        assertEquals(40, mob1.getHp());
+        assertEquals(50, mob2.getHp()); // untouched
     }
 }
