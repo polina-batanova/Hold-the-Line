@@ -56,6 +56,29 @@ public class Mob extends Entity {
         this.pathIndex    = 0;
         this.spawnDelay   = 0;
     }
+    // tier 1 mob
+    public static Mob createGoblin(int playerNumber, int[][] path) {
+        return new Mob("Goblin",
+                path[0][0], path[0][1],
+                30, 1, 5, 3, 20,
+                playerNumber, path);
+    }
+
+    // fast mob
+    public static Mob createWolf(int playerNumber, int[][] path) {
+        return new Mob("Wolf",
+                path[0][0], path[0][1],
+                40, 2, 6, 5, 40,   // быстрый, средний урон
+                playerNumber, path);
+    }
+
+    // tank mob
+    public static Mob createSlime(int playerNumber, int[][] path) {
+        return new Mob("Slime",
+                path[0][0], path[0][1],
+                120, 1, 12, 10, 80, // жирный, медленный
+                playerNumber, path);
+    }
 
     public int getMaxHp() {
         return maxHp;
