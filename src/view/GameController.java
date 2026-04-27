@@ -132,7 +132,7 @@ public class GameController {
         int playerNum = (current == gameManager.getPlayer1()) ? 1 : 2;
         int[][] path = (playerNum == 1) ? PATH_TOP : PATH_BOTTOM;
 
-        String[] options = {"Goblin - 20g", "Wolf - 40g", "Slime - 80g"};
+        String[] options = {"Goblin - 40g", "Wolf - 75g", "Slime - 120g"};
 
         int choice = JOptionPane.showOptionDialog(
                 gameMap,

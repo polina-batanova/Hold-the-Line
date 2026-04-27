@@ -65,21 +65,21 @@ public class Mob extends Entity {
     public static Mob createGoblin(int playerNumber, int[][] path) {
         return new Mob("Goblin",
                 path[0][0], path[0][1],
-                30, 1, 5, 3, 20,
+                30, 1, 5, 3, 40,
                 playerNumber, path);
     }
 
     public static Mob createWolf(int playerNumber, int[][] path) {
         return new Mob("Wolf",
                 path[0][0], path[0][1],
-                35, 2, 8, 5, 40,
+                35, 2, 8, 5, 75,
                 playerNumber, path);
     }
 
     public static Mob createSlime(int playerNumber, int[][] path) {
         return new Mob("Slime",
                 path[0][0], path[0][1],
-                100, 1, 15, 8, 80,
+                100, 1, 15, 8, 120,
                 playerNumber, path);
     }
 

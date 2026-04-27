@@ -31,7 +31,7 @@ public class Tower extends Entity {
         this.cost   = cost;
         this.totalInvested = cost;
         this.level  = 1;
-        this.attackCooldown = 3;
+        this.attackCooldown = 2;
         this.cooldownTimer = 0;
     }
     public int getTotalInvested() {
@@ -113,11 +113,11 @@ public class Tower extends Entity {
 
         if (level == 2) {
             this.damage += 3;
-            this.attackCooldown = 2;
+            this.attackCooldown = 1;
         } else if (level == 3) {
             this.damage += 4;
             this.range += 1;
-            this.attackCooldown = 2;
+            this.attackCooldown = 0;
         }
     }
 

@@ -13,7 +13,7 @@ public class Player {
 
     public int getMobSpendBonus() { return mobSpendBonus; }
     public void addMobSpendBonus(int cost) {
-        this.mobSpendBonus += (int)(cost * 0.20); // 20% of mob cost
+        this.mobSpendBonus += (int)(cost * 0.15);
     }
     public void resetMobSpendBonus() { this.mobSpendBonus = 0; }
 
@@ -37,8 +37,6 @@ public class Player {
         this.name = name;
         this.health = health;
         this.money = money;
-
-
         this.queuedMobs = new LinkedList<>();
     }
 
