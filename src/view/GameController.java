@@ -127,18 +127,16 @@ public class GameController {
         }
     }
 
-    // purchases
-    // buys mob for current player
     private void purchaseMob() {
         Player current = gameManager.getCurrentPlayer();
         int playerNum = (current == gameManager.getPlayer1()) ? 1 : 2;
         int[][] path = (playerNum == 1) ? PATH_TOP : PATH_BOTTOM;
 
-        String[] options = {"Goblin - 20g", "Wolf - 50g", "Slime - 100g"};
+        String[] options = {"Wolf - 40g", "Slime - 80g"};
 
         int choice = JOptionPane.showOptionDialog(
                 gameMap,
-                "Choose a mob to queue:",
+                "Choose a mob:",
                 "Buy Mob",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
@@ -154,8 +152,6 @@ public class GameController {
         Mob mob;
 
         if (choice == 0) {
-            mob = Mob.createGoblin(playerNum, path);
-        } else if (choice == 1) {
             mob = Mob.createWolf(playerNum, path);
         } else {
             mob = Mob.createSlime(playerNum, path);
