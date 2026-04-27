@@ -59,7 +59,6 @@ public class Projectile {
     public double getAngle() {
         double dx = targetX - x;
         double dy = targetY - y;
-
         return Math.atan2(dy, dx);
     }
 }

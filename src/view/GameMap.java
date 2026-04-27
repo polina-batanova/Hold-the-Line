@@ -43,8 +43,7 @@ public class GameMap extends JPanel {
     private final Timer animationTimer;
 
     private List<Projectile> projectiles = new ArrayList<>();
-    private BufferedImage projectileImage;
-
+    private BufferedImage[] projectileImages = new BufferedImage[27];
 
 
     /**
@@ -77,12 +76,14 @@ public class GameMap extends JPanel {
         this.assetLoader = new AssetLoader();
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
 
-        try {
-            projectileImage = ImageIO.read(
-                    getClass().getResource("/assets/towers/projectiles/arrow/1.png")
-            );
-        } catch (IOException | IllegalArgumentException e) {
-            System.out.println("Could not load projectile image.");
+        for (int i = 0; i < projectileImages.length; i++) {
+            try {
+                projectileImages[i] = ImageIO.read(
+                        getClass().getResource("/assets/towers/projectiles/arrow/" + (i + 1) + ".png")
+                );
+            } catch (IOException | IllegalArgumentException e) {
+                System.out.println("Could not load projectile image " + (i + 1));
+            }
         }
 
         animationTimer = new Timer(120, new ActionListener() {
@@ -94,6 +95,7 @@ public class GameMap extends JPanel {
         });
 
         animationTimer.start();
+
     }
 
 
@@ -471,35 +473,40 @@ public class GameMap extends JPanel {
 
 
     private void drawProjectiles(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-
         for (Projectile p : projectiles) {
             int x = (int) (p.getX() * TILE_SIZE);
             int y = (int) (p.getY() * TILE_SIZE);
 
-            if (projectileImage != null) {
-                int size = 16;
+            BufferedImage img = getProjectileImageByAngle(p.getAngle());
 
-                Graphics2D copy = (Graphics2D) g2d.create();
-
-                copy.translate(x, y);
-                copy.rotate(p.getAngle() + Math.PI / 2);
-
-                copy.drawImage(
-                        projectileImage,
-                        -size / 2,
-                        -size / 2,
-                        size,
-                        size,
-                        null
-                );
-
-                copy.dispose();
+            if (img != null) {
+                g.drawImage(img, x - 8, y - 8, 16, 16, null);
             } else {
                 g.setColor(Color.RED);
                 g.fillOval(x - 4, y - 4, 8, 8);
             }
         }
+    }
+
+    private BufferedImage getProjectileImageByAngle(double angle) {
+        double normalized = angle;
+
+        if (normalized < 0) {
+            normalized += Math.PI * 2;
+        }
+
+
+        int offset = 7;
+
+        int index = (int) Math.round(normalized / (Math.PI * 2) * projectileImages.length);
+
+        index = (index + offset) % projectileImages.length;
+
+        if (index < 0) {
+            index += projectileImages.length;
+        }
+
+        return projectileImages[index];
     }
 }
 
