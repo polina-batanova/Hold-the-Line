@@ -314,4 +314,16 @@ public class GameController {
         GameState s = gameManager.getState();
         return s == GameState.PLAYER1_TURN || s == GameState.PLAYER2_TURN;
     }
+
+    private void addProjectile(Tower tower, Mob mob) {
+        Projectile p = new Projectile(
+                tower.getCol(),
+                tower.getRow(),
+                mob.getCol(),
+                mob.getRow()
+        );
+
+        projectiles.add(p);
+        gameMap.setProjectiles(projectiles);
+    }
 }
