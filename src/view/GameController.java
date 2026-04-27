@@ -272,7 +272,10 @@ public class GameController {
             }
             // fire at current target
             if (t.getCurrentTarget() != null && !t.getCurrentTarget().isDead()) {
-                t.getCurrentTarget().takeDamage(t.getDamage());
+                Mob target = t.getCurrentTarget();
+
+                target.takeDamage(t.getDamage());
+                addProjectile(t, target);
             }
         }
 
