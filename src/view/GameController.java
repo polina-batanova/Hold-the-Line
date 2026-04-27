@@ -181,30 +181,10 @@ public class GameController {
             return;
         }
 
-        // If a tower already exists on this tile, show an upgrade dialog instead.
+        // If a tower already exists on this tile, show options
         for (Tower t : placedTowers) {
             if (t.getRow() == row && t.getCol() == col) {
-                if (t.isMaxLevel()) {
-                    JOptionPane.showMessageDialog(gameMap, "This tower is already at max level!");
-                    return;
-                }
-                int upgradeCost = t.getUpgradeCost();
-                int nextLevel = t.getLevel() + 1;
-                int upgradeChoice = JOptionPane.showConfirmDialog(
-                        gameMap,
-                        "Upgrade to Level " + nextLevel + "?\nCost: " + upgradeCost + " gold\n\nYour gold: "
-                                + current.getMoney(),
-                        "Tower Upgrade",
-                        JOptionPane.YES_NO_OPTION
-                );
-                if (upgradeChoice == JOptionPane.YES_OPTION) {
-                    if (current.spendMoney(upgradeCost)) {
-                        t.upgrade();
-                        System.out.println("Tower upgraded to level " + t.getLevel());
-                    } else {
-                        JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
-                    }
-                }
+                showTowerOptions(t, current);
                 return;
             }
         }
@@ -366,5 +346,63 @@ public class GameController {
 
         projectiles.add(p);
         gameMap.setProjectiles(projectiles);
+    }
+    private void showTowerOptions(Tower tower, Player player) {
+        String[] options = {"Upgrade", "Sell", "Cancel"};
+
+        int choice = JOptionPane.showOptionDialog(
+                gameMap,
+                "Tower options:",
+                "Tower",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (choice == 0) {
+            upgradeTower(tower, player);
+        } else if (choice == 1) {
+            sellTower(tower, player);
+        }
+    }
+
+    private void upgradeTower(Tower tower, Player player) {
+        if (tower.isMaxLevel()) {
+            JOptionPane.showMessageDialog(gameMap, "This tower is already at max level!");
+            return;
+        }
+
+        int upgradeCost = tower.getUpgradeCost();
+        int nextLevel = tower.getLevel() + 1;
+
+        int choice = JOptionPane.showConfirmDialog(
+                gameMap,
+                "Upgrade to Level " + nextLevel + "?\nCost: " + upgradeCost + " gold\n\nYour gold: "
+                        + player.getMoney(),
+                "Tower Upgrade",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (choice == JOptionPane.YES_OPTION) {
+            if (player.spendMoney(upgradeCost)) {
+                tower.upgrade();
+                System.out.println("Tower upgraded to level " + tower.getLevel());
+            } else {
+                JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
+            }
+        }
+    }
+
+    private void sellTower(Tower tower, Player player) {
+        int refund = tower.getSellRefund();
+
+        player.addMoney(refund);
+        placedTowers.remove(tower);
+
+        gameMap.repaint();
+
+        System.out.println("Tower sold for " + refund + " gold.");
     }
 }
