@@ -40,4 +40,20 @@ public class Projectile {
     public double getSpeed() {
         return speed;
     }
+
+    public void update() {
+        double dx = targetX - x;
+        double dy = targetY - y;
+        double dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist <= speed) {
+            x = targetX;
+            y = targetY;
+            active = false;
+            return;
+        }
+
+        x += (dx / dist) * speed;
+        y += (dy / dist) * speed;
+    }
 }
