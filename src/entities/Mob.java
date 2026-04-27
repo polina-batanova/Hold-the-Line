@@ -64,19 +64,17 @@ public class Mob extends Entity {
                 playerNumber, path);
     }
 
-    // fast mob
     public static Mob createWolf(int playerNumber, int[][] path) {
         return new Mob("Wolf",
                 path[0][0], path[0][1],
-                40, 2, 6, 5, 40,   // быстрый, средний урон
+                40, 2, 6, 5, 40,
                 playerNumber, path);
     }
 
-    // tank mob
     public static Mob createSlime(int playerNumber, int[][] path) {
         return new Mob("Slime",
                 path[0][0], path[0][1],
-                120, 1, 12, 10, 80, // жирный, медленный
+                120, 1, 12, 10, 80,
                 playerNumber, path);
     }
 
