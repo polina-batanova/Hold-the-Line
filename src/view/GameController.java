@@ -194,7 +194,7 @@ public class GameController {
         // preview range if no tower
         gameMap.showRangeIndicator(row, col, 3);
 
-        int cost = 100;
+        int cost = 80;
 
         // Ask the player for confirmation
         int choice = JOptionPane.showConfirmDialog(
@@ -274,22 +274,21 @@ public class GameController {
 
         // tower combat
         for (Tower t : placedTowers) {
-            // if out of range, find new
+            t.tickCooldown();
             if (!t.hasValidTarget()) {
                 t.setCurrentTarget(null);
                 for (Mob mob : activeMobs) {
                     if (t.isInRange(mob) && !mob.isDead()) {
                         t.setCurrentTarget(mob);
-                        break; // lock onto first mob found
+                        break;
                     }
                 }
             }
-            // fire at current target
-            if (t.getCurrentTarget() != null && !t.getCurrentTarget().isDead()) {
+            if (t.getCurrentTarget() != null && !t.getCurrentTarget().isDead() && t.canFire()) {
                 Mob target = t.getCurrentTarget();
-
                 addProjectile(t, target);
                 target.takeDamage(t.getDamage());
+                t.resetCooldown();
             }
         }
 

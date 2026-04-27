@@ -20,8 +20,8 @@ public class GameControllerTest {
     private final int[][] shortPath = {{4, 0}, {4, 1}, {4, 2}};
     @BeforeEach
     void setUp() {
-        p1 = new Player("Player 1", 100, 500);
-        p2 = new Player("Player 2", 100, 500);
+        p1 = new Player("Player 1", 100, 200);
+        p2 = new Player("Player 2", 100, 200);
         gm = new GameManager(p1, p2);
         gm.startGame();
     }
@@ -32,11 +32,11 @@ public class GameControllerTest {
     // tests that queueMob deduct money and add mob to queue
     @Test
     void testMoneyDeduction() {
-        Mob mob = new Mob("Goblin", 4, 0, 50, 1, 10, 5, 30, 1, shortPath);
+        Mob mob = new Mob("Goblin", 4, 0, 30, 1, 5, 3, 20, 1, shortPath);
         int before = p1.getMoney();
         boolean ok = gm.queueMob(p1, mob, mob.getCost());
         assertTrue(ok);
-        assertEquals(before - 30, p1.getMoney());
+        assertEquals(before - 20, p1.getMoney());
         assertEquals(1, p1.getQueuedMobs().size());
     }
 
@@ -56,13 +56,11 @@ public class GameControllerTest {
     // tests that P1 mob reaching end damages P2
     @Test
     void testP1DmgP2() {
-        Mob mob = new Mob("Goblin", 4, 0, 50, 1, 10, 5, 30, 1, shortPath);
-        mob.move();
-        mob.move();
-        mob.move();
+        Mob mob = new Mob("Goblin", 4, 0, 30, 1, 5, 3, 20, 1, shortPath);
+        mob.move(); mob.move(); mob.move();
         assertTrue(mob.hasReachedEnd());
         p2.takeDamage(mob.getDamage());
-        assertEquals(90, p2.getHealth());
+        assertEquals(95, p2.getHealth());
     }
 
     // tests that P2 mob reaching end damages P1
@@ -81,14 +79,14 @@ public class GameControllerTest {
     // tests that tower killing a P1 mob gives bounty to P2
     @Test
     void testP1BountyP2() {
-        Mob mob = new Mob("Goblin", 4, 5, 10, 1, 10, 5, 50, 1, shortPath);
-        Tower tower = new Tower("Archer", 4, 5, 3, 50, 100);
+        Mob mob = new Mob("Goblin", 4, 5, 30, 1, 5, 3, 20, 1, shortPath);
+        Tower tower = new Tower("Archer", 4, 5, 3, 50, 80);
         assertTrue(tower.isInRange(mob));
         mob.takeDamage(tower.getDamage());
         assertTrue(mob.isDead());
         int before = p2.getMoney();
         p2.addMoney(mob.getBounty());
-        assertEquals(before + 5, p2.getMoney());
+        assertEquals(before + 3, p2.getMoney());
     }
 
 
@@ -98,10 +96,11 @@ public class GameControllerTest {
     @Test
     void testIncome() {
         int income1 = gm.getBaseIncome();
+        assertEquals(100, income1);
         gm.nextTurn();
         gm.nextTurn();
         gm.nextTurn();
-        assertTrue(gm.getBaseIncome() > income1);
+        assertEquals(115, gm.getBaseIncome());
     }
 
 

@@ -18,7 +18,7 @@ public class GameManager {
         this.player2 = player2;
         this.state = GameState.NOT_STARTED;
         this.currentRound = 0;
-        this.baseIncome = 50;
+        this.baseIncome = 100;
     }
 
     public void startGame() {
@@ -37,7 +37,7 @@ public class GameManager {
                 break;
             case ROUND_EXECUTION:
                 currentRound++;
-                baseIncome += 10;
+                baseIncome += 15;
                 giveRoundIncome();
                 state = GameState.PLAYER1_TURN;
                 break;

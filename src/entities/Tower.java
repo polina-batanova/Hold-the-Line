@@ -11,6 +11,8 @@ public class Tower extends Entity {
     private int cost; // cost to place
     private int level; // upgrade level, starts at 1
     private int totalInvested;
+    private int attackCooldown;  // ticks between shots
+    private int cooldownTimer;
 
     // constructs a tower with all stats
     public Tower(String name, int row, int col, int range, int damage, int cost) {
@@ -29,6 +31,8 @@ public class Tower extends Entity {
         this.cost   = cost;
         this.totalInvested = cost;
         this.level  = 1;
+        this.attackCooldown = 3;
+        this.cooldownTimer = 0;
     }
     public int getTotalInvested() {
         return totalInvested;
@@ -83,6 +87,19 @@ public class Tower extends Entity {
         return level * 75;
     }
 
+    public boolean canFire() {
+        return cooldownTimer <= 0;
+    }
+    public void resetCooldown() {
+        cooldownTimer = attackCooldown;
+    }
+    public void tickCooldown() {
+        if (cooldownTimer > 0) cooldownTimer--;
+    }
+    public int getAttackCooldown() {
+        return attackCooldown;
+    }
+
 
     public void upgrade() {
         if (isMaxLevel()) {
@@ -96,9 +113,11 @@ public class Tower extends Entity {
 
         if (level == 2) {
             this.damage += 3;
+            this.attackCooldown = 2;
         } else if (level == 3) {
             this.damage += 4;
             this.range += 1;
+            this.attackCooldown = 2;
         }
     }
 
