@@ -99,7 +99,7 @@ public class GameMap extends JPanel {
 
 
 
-        
+
 
     public void updateData(List<Tower> towers, List<Mob> mobs) {
         this.currentTowers = towers;
@@ -476,7 +476,7 @@ private void drawProjectiles(Graphics g) {
         int y = (int) (p.getY() * TILE_SIZE + TILE_SIZE / 2);
 
         if (projectileImage != null) {
-            g.drawImage(projectileImage, x - 12, y - 12, 24, 24, null);
+            g.drawImage(projectileImage, x - 6, y - 6, 12, 12, null);
         } else {
             g.setColor(Color.RED);
             g.fillOval(x - 5, y - 5, 10, 10);
