@@ -51,6 +51,8 @@ public class GameMap extends JPanel {
     private int rangeCol = 0;
     private int rangeRadius = 0;
 
+    private int currentQueueSize = 0;
+
     /**
      * 0: Grass,
      * 1-6: Path,
@@ -218,7 +220,7 @@ public class GameMap extends JPanel {
     }
 
     public void updateHUD(String playerName, int gold, int round,
-                          int p1Hp, int p2Hp, boolean battlePhase) {
+                          int p1Hp, int p2Hp, boolean battlePhase, int queueSize) {
         // HUD stops updating during game-over
         if (isGameOver) {
             return;
@@ -229,6 +231,7 @@ public class GameMap extends JPanel {
         this.p1Health = p1Hp;
         this.p2Health = p2Hp;
         this.isBattlePhase = battlePhase;
+        this.currentQueueSize = queueSize;
     }
 
     // Marks the game as over and stores the winner's display name.
@@ -322,7 +325,19 @@ public class GameMap extends JPanel {
             g2d.drawRoundRect(660, hudY + 5, 120, 35, 10, 10);
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("Arial", Font.BOLD, 12));
-            g2d.drawString("END TURN", 685, hudY + 28);
+            String label;
+            if (currentPlayerName.contains("1")) {
+                label = "END TURN (P1)";
+            } else {
+                label = "START BATTLE";
+            }
+            g2d.drawString(label, 670, hudY + 28);
+        }
+        // queue counter
+        if (!isBattlePhase && currentQueueSize > 0) {
+            g2d.setColor(new Color(255, 215, 0));
+            g2d.setFont(new Font("Arial", Font.BOLD, 11));
+            g2d.drawString("Queue: " + currentQueueSize, 140, hudY + 40);
         }
     }
 

@@ -243,7 +243,8 @@ public class GameController {
                     gameManager.getCurrentRound(),
                     gameManager.getPlayer1().getHealth(),
                     gameManager.getPlayer2().getHealth(),
-                    battle
+                    battle,
+                    current.getQueuedMobs().size()
             );
         });
         gameLoop.start();
