@@ -447,4 +447,16 @@ public class GameMap extends JPanel {
     public void setProjectiles(List<Projectile> projectiles) {
         this.projectiles = projectiles;
     }
+
+
+    private void drawProjectiles(Graphics g) {
+        g.setColor(Color.BLACK);
+
+        for (Projectile p : projectiles) {
+            int x = (int) (p.getX() * TILE_SIZE + TILE_SIZE / 2);
+            int y = (int) (p.getY() * TILE_SIZE + TILE_SIZE / 2);
+
+            g.fillOval(x - 4, y - 4, 8, 8);
+        }
+    }
 }
