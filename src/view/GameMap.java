@@ -282,7 +282,7 @@ public class GameMap extends JPanel {
 
     // Renders an animated walking mob
     private void renderMob(Graphics g, Mob m) {
-        String tier = "tier1";
+        String tier = getMobTier(m);
         BufferedImage sheet = assetLoader.getSprite("mobs/" + tier + "/walk");
         int drawX = m.getCol() * TILE_SIZE;
         int drawY = m.getRow() * TILE_SIZE;
@@ -299,6 +299,17 @@ public class GameMap extends JPanel {
         }
 
         drawMobHpBar((Graphics2D) g, m, drawX, drawY);
+    }
+    private String getMobTier(Mob m) {
+        if (m.getName().equals("Wolf")) {
+            return "tier2";
+        }
+
+        if (m.getName().equals("Slime")) {
+            return "tier3";
+        }
+
+        return "tier1";
     }
 
     private void drawMobHpBar(Graphics2D g2d, Mob m, int drawX, int drawY) {
