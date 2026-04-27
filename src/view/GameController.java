@@ -229,18 +229,32 @@ public class GameController {
             return;
         }
 
+        // move all mobs
+        for (Mob mob : activeMobs) {
+            mob.move();
+        }
+
+        // tower combat
+        for (Tower t : placedTowers) {
+            // if out of range, find new
+            if (!t.hasValidTarget()) {
+                t.setCurrentTarget(null);
+                for (Mob mob : activeMobs) {
+                    if (t.isInRange(mob) && !mob.isDead()) {
+                        t.setCurrentTarget(mob);
+                        break; // lock onto first mob found
+                    }
+                }
+            }
+            // fire at current target
+            if (t.getCurrentTarget() != null && !t.getCurrentTarget().isDead()) {
+                t.getCurrentTarget().takeDamage(t.getDamage());
+            }
+        }
+
         Iterator<Mob> it = activeMobs.iterator();
         while (it.hasNext()) {
             Mob mob = it.next();
-
-            // move
-            mob.move();
-            // tower combat
-            for (Tower t : placedTowers) {
-                if (t.isInRange(mob)) {
-                    mob.takeDamage(t.getDamage());
-                }
-            }
 
             // check if mob died
             if (mob.isDead()) {

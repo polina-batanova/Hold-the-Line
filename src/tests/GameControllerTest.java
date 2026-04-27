@@ -174,4 +174,22 @@ public class GameControllerTest {
         mob2.move();
         assertEquals(18, mob2.getCol(), "Mob2 should move now");
     }
+
+
+    // ====== SINGLE-TARGET TESTS ======
+
+    // tests that tower locks onto one mob and doesn't hit others
+    @Test
+    void testSingleTarget() {
+        Tower tower = new Tower("Archer", 4, 5, 3, 10, 80);
+        Mob mob1 = new Mob("Goblin", 4, 5, 50, 1, 10, 5, 30, 1, shortPath);
+        Mob mob2 = new Mob("Goblin", 4, 6, 50, 1, 10, 5, 30, 1, shortPath);
+        // tower locks mob1
+        tower.setCurrentTarget(mob1);
+        assertTrue(tower.hasValidTarget());
+        // only mob1 takes damage
+        mob1.takeDamage(tower.getDamage());
+        assertEquals(20, mob1.getHp());
+        assertEquals(30, mob2.getHp()); // untouched
+    }
 }

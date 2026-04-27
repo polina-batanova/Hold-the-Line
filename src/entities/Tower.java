@@ -45,6 +45,23 @@ public class Tower extends Entity {
         return level;
     }
 
+    // locked mob
+    private Mob currentTarget;
+    // returns focused mob
+    public Mob getCurrentTarget() {
+        // todo: implement
+        return null;
+    }
+    // sets new target
+    public void setCurrentTarget(Mob target) {
+        // todo: implement
+    }
+    // true if target is alive and in range
+    public boolean hasValidTarget() {
+        // todo: implement
+        return false;
+    }
+
     // true when tower has reached the final upgrade level
     public boolean isMaxLevel() {
         return level >= MAX_LEVEL;
