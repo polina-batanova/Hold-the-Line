@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import entities.Projectile;
 
+import javax.imageio.ImageIO;
+import java.io.IOException;
+
 
 
 public class GameMap extends JPanel {
@@ -40,6 +43,9 @@ public class GameMap extends JPanel {
     private final Timer animationTimer;
 
     private List<Projectile> projectiles = new ArrayList<>();
+    private BufferedImage projectileImage;
+
+
 
     /**
      * 0: Grass,
@@ -71,6 +77,14 @@ public class GameMap extends JPanel {
         this.assetLoader = new AssetLoader();
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
 
+        try {
+            projectileImage = ImageIO.read(
+                    getClass().getResource("/assets/towers/projectiles/arrow/1.png")
+            );
+        } catch (IOException | IllegalArgumentException e) {
+            System.out.println("Could not load projectile image.");
+        }
+
         animationTimer = new Timer(120, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -78,8 +92,14 @@ public class GameMap extends JPanel {
                 repaint();
             }
         });
+
         animationTimer.start();
     }
+
+
+
+
+        
 
     public void updateData(List<Tower> towers, List<Mob> mobs) {
         this.currentTowers = towers;
@@ -450,14 +470,19 @@ public class GameMap extends JPanel {
     }
 
 
-    private void drawProjectiles(Graphics g) {
-        g.setColor(Color.BLACK);
+private void drawProjectiles(Graphics g) {
+    for (Projectile p : projectiles) {
+        int x = (int) (p.getX() * TILE_SIZE + TILE_SIZE / 2);
+        int y = (int) (p.getY() * TILE_SIZE + TILE_SIZE / 2);
 
-        for (Projectile p : projectiles) {
-            int x = (int) (p.getX() * TILE_SIZE + TILE_SIZE / 2);
-            int y = (int) (p.getY() * TILE_SIZE + TILE_SIZE / 2);
-
-            g.fillOval(x - 4, y - 4, 8, 8);
+        if (projectileImage != null) {
+            g.drawImage(projectileImage, x - 12, y - 12, 24, 24, null);
+        } else {
+            g.setColor(Color.RED);
+            g.fillOval(x - 5, y - 5, 10, 10);
         }
     }
 }
+}
+
+
