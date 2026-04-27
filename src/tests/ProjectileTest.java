@@ -14,4 +14,12 @@ public class ProjectileTest {
 
         assertTrue(p.isActive());
     }
+    @Test
+    public void testProjectileMovesForward() {
+        Projectile p = new Projectile(0, 0, 5, 0);
+
+        p.update();
+
+        assertTrue(p.getX() > 0);
+    }
 }
