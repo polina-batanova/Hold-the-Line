@@ -22,4 +22,13 @@ public class ProjectileTest {
 
         assertTrue(p.getX() > 0);
     }
+
+    @Test
+    public void testProjectileBecomesInactiveAtTarget() {
+        Projectile p = new Projectile(0, 0, 0.1, 0);
+
+        p.update();
+
+        assertFalse(p.isActive());
+    }
 }
