@@ -20,6 +20,9 @@ public class Mob extends Entity {
     // delay before move
     private int spawnDelay;
 
+    private boolean dying;
+    private int deathFrame;
+
     // constructor compatible with milestone 1 tests
     public Mob(String name, int row, int col,
                int hp, int speed, int damage, int bounty, int cost) {
@@ -55,6 +58,8 @@ public class Mob extends Entity {
         this.path         = path;
         this.pathIndex    = 0;
         this.spawnDelay   = 0;
+        this.dying = false;
+        this.deathFrame = 0;
     }
     // tier 1 mob
     public static Mob createGoblin(int playerNumber, int[][] path) {
@@ -128,5 +133,28 @@ public class Mob extends Entity {
     // true if mob's hp <= 0
     public boolean isDead() {
         return hp <= 0;
+    }
+
+    public void startDeathAnimation() {
+        dying = true;
+        deathFrame = 0;
+    }
+
+    public boolean isDying() {
+        return dying;
+    }
+
+    public void updateDeathAnimation() {
+        if (dying) {
+            deathFrame++;
+        }
+    }
+
+    public int getDeathFrame() {
+        return deathFrame;
+    }
+
+    public boolean shouldRemoveAfterDeath() {
+        return dying && deathFrame >= 6;
     }
 }
