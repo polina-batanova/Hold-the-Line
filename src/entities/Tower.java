@@ -49,17 +49,17 @@ public class Tower extends Entity {
     private Mob currentTarget;
     // returns focused mob
     public Mob getCurrentTarget() {
-        // todo: implement
-        return null;
+        return currentTarget;
     }
     // sets new target
     public void setCurrentTarget(Mob target) {
-        // todo: implement
+        this.currentTarget = target;
     }
     // true if target is alive and in range
     public boolean hasValidTarget() {
-        // todo: implement
-        return false;
+        return currentTarget != null
+                && !currentTarget.isDead()
+                && isInRange(currentTarget);
     }
 
     // true when tower has reached the final upgrade level
