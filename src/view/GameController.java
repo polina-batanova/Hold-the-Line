@@ -327,12 +327,13 @@ public class GameController {
     }
 
     private void addProjectile(Tower tower, Mob mob) {
-        Projectile p = new Projectile(
-                tower.getCol(),
-                tower.getRow(),
-                mob.getCol(),
-                mob.getRow()
-        );
+        double startX = tower.getCol() + 0.5;
+        double startY = tower.getRow() + 0.5;
+
+        double targetX = mob.getCol() + 0.5;
+        double targetY = mob.getRow() + 0.5;
+
+        Projectile p = new Projectile(startX, startY, targetX, targetY);
 
         projectiles.add(p);
         gameMap.setProjectiles(projectiles);

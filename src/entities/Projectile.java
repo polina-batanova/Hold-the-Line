@@ -13,7 +13,7 @@ public class Projectile {
         this.y = startY;
         this.targetX = targetX;
         this.targetY = targetY;
-        this.speed = 0.25;
+        this.speed = 1.0;
         this.active = true;
     }
 
