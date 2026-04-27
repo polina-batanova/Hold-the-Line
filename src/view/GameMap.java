@@ -45,7 +45,6 @@ public class GameMap extends JPanel {
     private List<Projectile> projectiles = new ArrayList<>();
     private BufferedImage[] projectileImages = new BufferedImage[27];
 
-
     /**
      * 0: Grass,
      * 1-6: Path,
@@ -98,21 +97,30 @@ public class GameMap extends JPanel {
 
     }
 
-
-
-
-
-
     public void updateData(List<Tower> towers, List<Mob> mobs) {
         this.currentTowers = towers;
         this.currentMobs = mobs;
         repaint();
     }
 
+
+    // darkens the inactive player's half
+    private void drawSideBlackout(Graphics2D g2d) {
+        if (isBattlePhase || isGameOver) return;
+        int fenceY = 7 * TILE_SIZE;
+        g2d.setColor(new Color(0, 0, 0, 60));
+        if (currentPlayerName.contains("1")) {
+            // p1's turn
+            g2d.fillRect(0, 0, COLS * TILE_SIZE, fenceY);
+        } else {
+            // p2's turn
+            g2d.fillRect(0, fenceY + TILE_SIZE, COLS * TILE_SIZE, (ROWS * TILE_SIZE) - fenceY - TILE_SIZE);
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -163,6 +171,9 @@ public class GameMap extends JPanel {
         }
         drawProjectiles(g);
 
+        // Darken inactive side
+        drawSideBlackout(g2d);
+
         // Draw UI Overlay Elements
         drawHUD(g);
 
@@ -170,6 +181,7 @@ public class GameMap extends JPanel {
             drawGameOver((Graphics2D) g);
         }
     }
+
     public void updateHUD(String playerName, int gold, int round,
                           int p1Hp, int p2Hp, boolean battlePhase) {
         // HUD stops updating during game-over
@@ -318,8 +330,6 @@ public class GameMap extends JPanel {
         if (!m.isDying()) {
             drawMobHpBar((Graphics2D) g, m, drawX, drawY);
         }
-
-        drawMobHpBar((Graphics2D) g, m, drawX, drawY);
     }
 
     private String getMobDeathSpriteKey(Mob m) {
