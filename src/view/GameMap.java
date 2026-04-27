@@ -79,7 +79,7 @@ public class GameMap extends JPanel {
 
         try {
             projectileImage = ImageIO.read(
-                    getClass().getResource("/assets/towers/projectiles/arrow/7.png")
+                    getClass().getResource("/assets/towers/projectiles/arrow/1.png")
             );
         } catch (IOException | IllegalArgumentException e) {
             System.out.println("Could not load projectile image.");
@@ -471,12 +471,30 @@ public class GameMap extends JPanel {
 
 
     private void drawProjectiles(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+
         for (Projectile p : projectiles) {
             int x = (int) (p.getX() * TILE_SIZE);
             int y = (int) (p.getY() * TILE_SIZE);
 
             if (projectileImage != null) {
-                g.drawImage(projectileImage, x - 6, y - 6, 12, 12, null);
+                int size = 16;
+
+                Graphics2D copy = (Graphics2D) g2d.create();
+
+                copy.translate(x, y);
+                copy.rotate(p.getAngle() + Math.PI / 2);
+
+                copy.drawImage(
+                        projectileImage,
+                        -size / 2,
+                        -size / 2,
+                        size,
+                        size,
+                        null
+                );
+
+                copy.dispose();
             } else {
                 g.setColor(Color.RED);
                 g.fillOval(x - 4, y - 4, 8, 8);

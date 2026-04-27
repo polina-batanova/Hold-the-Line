@@ -56,4 +56,10 @@ public class Projectile {
         x += (dx / dist) * speed;
         y += (dy / dist) * speed;
     }
+    public double getAngle() {
+        double dx = targetX - x;
+        double dy = targetY - y;
+
+        return Math.atan2(dy, dx);
+    }
 }
