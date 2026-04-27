@@ -14,12 +14,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 
+import entities.Projectile;
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameController {
     private final GameMap gameMap;
     private final GameManager gameManager;
     private final List<Tower> placedTowers = new ArrayList<>();
     private final List<Mob> activeMobs = new ArrayList<>();
     private Timer gameLoop;
+    private List<Projectile> projectiles = new ArrayList<>();
 
     // path definitions
     // player 1 road (top)
