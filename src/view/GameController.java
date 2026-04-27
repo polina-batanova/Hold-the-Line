@@ -274,8 +274,8 @@ public class GameController {
             if (t.getCurrentTarget() != null && !t.getCurrentTarget().isDead()) {
                 Mob target = t.getCurrentTarget();
 
-                target.takeDamage(t.getDamage());
                 addProjectile(t, target);
+                target.takeDamage(t.getDamage());
             }
         }
 
