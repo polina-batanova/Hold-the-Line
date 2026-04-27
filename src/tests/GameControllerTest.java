@@ -191,4 +191,142 @@ public class GameControllerTest {
         assertEquals(40, mob1.getHp());
         assertEquals(50, mob2.getHp()); // untouched
     }
+
+
+    // ====== TOWER COOLDOWN TESTS ======
+
+    // tests tower cannot fire while on cooldown
+    @Test
+    void testTowerCooldownBlocksFire() {
+        Tower tower = new Tower("Archer", 4, 5, 3, 5, 80);
+        tower.resetCooldown();
+        assertFalse(tower.canFire(), "Tower should not fire right after reset");
+    }
+
+    // tests tower can fire after cooldown expires
+    @Test
+    void testTowerCooldownExpires() {
+        Tower tower = new Tower("Archer", 4, 5, 3, 5, 80);
+        tower.resetCooldown(); // cooldown = 3
+        tower.tickCooldown();  // 2
+        tower.tickCooldown();  // 1
+        tower.tickCooldown();  // 0
+        assertTrue(tower.canFire(), "Tower should fire after cooldown expires");
+    }
+
+    // tests that Lv2 tower has faster cooldown
+    @Test
+    void testUpgradedCooldown() {
+        Tower tower = new Tower("Archer", 4, 5, 3, 5, 80);
+        assertEquals(2, tower.getAttackCooldown());
+        tower.upgrade();
+        assertEquals(1, tower.getAttackCooldown(), "Lv2 should have cooldown 1");
+    }
+
+    // ====== MOB INCOME BONUS TESTS ======
+
+    // tests that buying mobs increases income bonus
+    @Test
+    void testMobSpendBonus() {
+        assertEquals(0, p1.getMobSpendBonus());
+        p1.addMobSpendBonus(20); // 20% of 20 = 4
+        assertEquals(4, p1.getMobSpendBonus());
+        p1.addMobSpendBonus(80); // +20% of 80 = +16
+        assertEquals(20, p1.getMobSpendBonus());
+    }
+
+    // tests that bonus resets
+    @Test
+    void testMobBonusReset() {
+        p1.addMobSpendBonus(100);
+        p1.resetMobSpendBonus();
+        assertEquals(0, p1.getMobSpendBonus());
+    }
+
+
+    // ====== FACTORY METHOD TESTS ======
+
+    // tests goblin factory creates correct stats
+    @Test
+    void testGoblinFactory() {
+        Mob g = Mob.createGoblin(1, shortPath);
+        assertEquals("Goblin", g.getName());
+        assertEquals(30, g.getHp());
+        assertEquals(1, g.getSpeed());
+        assertEquals(5, g.getDamage());
+        assertEquals(3, g.getBounty());
+        assertEquals(40, g.getCost());
+    }
+
+    // tests wolf factory creates correct stats
+    @Test
+    void testWolfFactory() {
+        Mob w = Mob.createWolf(1, shortPath);
+        assertEquals("Wolf", w.getName());
+        assertEquals(35, w.getHp());
+        assertEquals(2, w.getSpeed());
+        assertEquals(8, w.getDamage());
+        assertEquals(5, w.getBounty());
+        assertEquals(75, w.getCost());
+    }
+
+    // tests slime factory creates correct stats
+    @Test
+    void testSlimeFactory() {
+        Mob s = Mob.createSlime(1, shortPath);
+        assertEquals("Slime", s.getName());
+        assertEquals(100, s.getHp());
+        assertEquals(1, s.getSpeed());
+        assertEquals(15, s.getDamage());
+        assertEquals(8, s.getBounty());
+        assertEquals(120, s.getCost());
+    }
+
+
+    // ====== TOWER SELL TESTS ======
+
+    // tests tower sell gives 50% refund
+    @Test
+    void testTowerSellRefund() {
+        Tower t = new Tower("Archer", 4, 5, 3, 5, 80);
+        assertEquals(40, t.getSellRefund());
+    }
+
+    // tests upgraded tower sell includes upgrade investment
+    @Test
+    void testUpgradedTowerSellRefund() {
+        Tower t = new Tower("Archer", 4, 5, 3, 5, 80);
+        t.upgrade(); // +75 invested → total 155
+        assertEquals(77, t.getSellRefund()); // 155/2 = 77
+    }
+
+
+    // ====== DEATH ANIMATION TESTS ======
+
+    // tests death animation lifecycle
+    @Test
+    void testDeathAnimation() {
+        Mob mob = new Mob("Goblin", 4, 0, 10, 1, 5, 3, 20, 1, shortPath);
+        assertFalse(mob.isDying());
+        mob.takeDamage(10);
+        assertTrue(mob.isDead());
+        mob.startDeathAnimation();
+        assertTrue(mob.isDying());
+        for (int i = 0; i < 6; i++) mob.updateDeathAnimation();
+        assertTrue(mob.shouldRemoveAfterDeath());
+    }
+
+
+    // ====== SINGLE TARGET SWITCH TEST ======
+
+    // tests tower switches target when current dies
+    @Test
+    void testTargetSwitchOnDeath() {
+        Tower tower = new Tower("Archer", 4, 5, 3, 50, 80);
+        Mob mob1 = new Mob("Goblin", 4, 5, 10, 1, 5, 3, 20, 1, shortPath);
+        tower.setCurrentTarget(mob1);
+        mob1.takeDamage(50);
+        assertTrue(mob1.isDead());
+        assertFalse(tower.hasValidTarget());
+    }
 }
