@@ -145,6 +145,17 @@ public class GameController {
     private void attemptTowerPlacement(int row, int col) {
         Player current = gameManager.getCurrentPlayer();
 
+        // tower placement to own side of the map
+        boolean isPlayer1 = (current == gameManager.getPlayer1());
+        if (isPlayer1 && row > 6) {
+            JOptionPane.showMessageDialog(gameMap, "You can only place towers on your side!");
+            return;
+        }
+        if (!isPlayer1 && row < 8) {
+            JOptionPane.showMessageDialog(gameMap, "You can only place towers on your side!");
+            return;
+        }
+
         // If a tower already exists on this tile, show an upgrade dialog instead.
         for (Tower t : placedTowers) {
             if (t.getRow() == row && t.getCol() == col) {
