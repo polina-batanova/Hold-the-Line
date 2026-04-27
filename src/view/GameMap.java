@@ -322,9 +322,6 @@ public class GameMap extends JPanel {
         drawMobHpBar((Graphics2D) g, m, drawX, drawY);
     }
 
-
-
-
     private String getMobDeathSpriteKey(Mob m) {
         if (m.getName().equals("Wolf")) {
             return "mobs/wolf/D_Death";
@@ -363,22 +360,26 @@ public class GameMap extends JPanel {
 
     private void drawMobHpBar(Graphics2D g2d, Mob m, int drawX, int drawY) {
         int barWidth = TILE_SIZE;
-        int barHeight = 2;
+        int barHeight = 4;
         int barX = drawX;
-        int barY = drawY - 4;
+        int barY = drawY - 6;
 
         // Background (dark)
         g2d.setColor(new Color(0, 0, 0, 180));
         g2d.fillRect(barX, barY, barWidth, barHeight);
 
+        // background (dark grey fill)
+        g2d.setColor(new Color(40, 40, 40));
+        g2d.fillRect(barX + 1, barY + 1, barWidth - 1, barHeight - 1);
+
         // Foreground fill width = currentHp / maxHp
         double pct = (m.getMaxHp() <= 0) ? 0.0 : (double) m.getHp() / m.getMaxHp();
         if (pct < 0) pct = 0;
         if (pct > 1) pct = 1;
-        int fill = (int) Math.round(barWidth * pct);
+        int fill = (int) Math.round((barWidth - 1) * pct);
 
         g2d.setColor(hpBarColor(pct));
-        g2d.fillRect(barX, barY, fill, barHeight);
+        g2d.fillRect(barX + 1, barY + 1, fill, barHeight - 1);
     }
 
     public static Color hpBarColor(double pct) {

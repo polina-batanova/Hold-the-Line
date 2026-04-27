@@ -172,11 +172,11 @@ public class GameController {
 
         // tower placement to own side of the map
         boolean isPlayer1 = (current == gameManager.getPlayer1());
-        if (isPlayer1 && row > 6) {
+        if (isPlayer1 && row < 8) {
             JOptionPane.showMessageDialog(gameMap, "You can only place towers on your side!");
             return;
         }
-        if (!isPlayer1 && row < 8) {
+        if (!isPlayer1 && row > 6) {
             JOptionPane.showMessageDialog(gameMap, "You can only place towers on your side!");
             return;
         }
