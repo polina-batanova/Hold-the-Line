@@ -11,8 +11,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import entities.Projectile;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 public class GameMap extends JPanel {

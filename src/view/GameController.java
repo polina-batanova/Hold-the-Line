@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.Queue;
 
 import entities.Projectile;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class GameController {
     private final GameMap gameMap;
@@ -218,6 +217,15 @@ public class GameController {
             if (gameManager.getState() == GameState.ROUND_EXECUTION) {
                 processExecutionPhase();
             }
+
+            // update visual projectiles
+            for (Projectile p : projectiles) {
+                p.update();
+            }
+
+            projectiles.removeIf(p -> !p.isActive());
+            gameMap.setProjectiles(projectiles);
+
             gameMap.updateData(placedTowers, activeMobs);
 
             // update hud
