@@ -10,6 +10,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import entities.Projectile;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GameMap extends JPanel {
@@ -36,6 +39,8 @@ public class GameMap extends JPanel {
     // Global tick used to sync all sprite animations
     private int animationTick = 0;
     private final Timer animationTimer;
+
+    private List<Projectile> projectiles = new ArrayList<>();
 
     /**
      * 0: Grass,
@@ -436,5 +441,10 @@ public class GameMap extends JPanel {
     public int calculateFrameX(int tick, int sheetWidth, int totalFrames) {
         int frameWidth = sheetWidth / totalFrames;
         return (tick % totalFrames) * frameWidth;
+
+    }
+
+    public void setProjectiles(List<Projectile> projectiles) {
+        this.projectiles = projectiles;
     }
 }
