@@ -9,6 +9,13 @@ public class Player {
     private int health;
     private int money;
     private String name;
+    private int mobSpendBonus = 0;
+
+    public int getMobSpendBonus() { return mobSpendBonus; }
+    public void addMobSpendBonus(int cost) {
+        this.mobSpendBonus += (int)(cost * 0.20); // 20% of mob cost
+    }
+    public void resetMobSpendBonus() { this.mobSpendBonus = 0; }
 
 
     // queue for mobs before round starts

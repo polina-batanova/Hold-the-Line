@@ -53,6 +53,9 @@ public class GameMap extends JPanel {
 
     private int currentQueueSize = 0;
 
+    private int currentIncome = 0;
+    private int currentMobBonus = 0;
+
     /**
      * 0: Grass,
      * 1-6: Path,
@@ -220,7 +223,7 @@ public class GameMap extends JPanel {
     }
 
     public void updateHUD(String playerName, int gold, int round,
-                          int p1Hp, int p2Hp, boolean battlePhase, int queueSize) {
+                          int p1Hp, int p2Hp, boolean battlePhase, int queueSize, int income, int mobBonus) {
         // HUD stops updating during game-over
         if (isGameOver) {
             return;
@@ -232,6 +235,8 @@ public class GameMap extends JPanel {
         this.p2Health = p2Hp;
         this.isBattlePhase = battlePhase;
         this.currentQueueSize = queueSize;
+        this.currentIncome = income;
+        this.currentMobBonus = mobBonus;
     }
 
     // Marks the game as over and stores the winner's display name.
@@ -297,9 +302,14 @@ public class GameMap extends JPanel {
         g2d.setColor(new Color(255, 215, 0));
         g2d.drawString("Gold: " + currentGold, 10, hudY + 40);
 
-        // Round counter (center)
-        g2d.setColor(Color.WHITE);
-        g2d.drawString("Round " + currentRound, 370, hudY + 30);
+        // income display
+        g2d.setColor(new Color(180, 255, 180));
+        g2d.setFont(new Font("Arial", Font.PLAIN, 11));
+        String incomeText = "Income: " + currentIncome;
+        if (currentMobBonus > 0) {
+            incomeText += " (+" + currentMobBonus + " mob bonus)";
+        }
+        g2d.drawString(incomeText, 310, hudY + 30);
 
         // HP displays
         g2d.setColor(new Color(100, 200, 255));

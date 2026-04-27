@@ -244,7 +244,9 @@ public class GameController {
                     gameManager.getPlayer1().getHealth(),
                     gameManager.getPlayer2().getHealth(),
                     battle,
-                    current.getQueuedMobs().size()
+                    current.getQueuedMobs().size(),
+                    gameManager.getBaseIncome() + current.getMobSpendBonus(),
+                    current.getMobSpendBonus()
             );
         });
         gameLoop.start();
