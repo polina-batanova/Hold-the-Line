@@ -184,10 +184,15 @@ public class GameController {
         // If a tower already exists on this tile, show options
         for (Tower t : placedTowers) {
             if (t.getRow() == row && t.getCol() == col) {
+                gameMap.showRangeIndicator(row, col, t.getRange());
                 showTowerOptions(t, current);
+                gameMap.clearRangeIndicator();
                 return;
             }
         }
+
+        // preview range if no tower
+        gameMap.showRangeIndicator(row, col, 3);
 
         int cost = 100;
 

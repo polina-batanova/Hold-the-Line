@@ -45,6 +45,12 @@ public class GameMap extends JPanel {
     private List<Projectile> projectiles = new ArrayList<>();
     private BufferedImage[] projectileImages = new BufferedImage[27];
 
+    // atk range indicator state
+    private boolean showRange = false;
+    private int rangeRow = 0;
+    private int rangeCol = 0;
+    private int rangeRadius = 0;
+
     /**
      * 0: Grass,
      * 1-6: Path,
@@ -103,6 +109,20 @@ public class GameMap extends JPanel {
         repaint();
     }
 
+    // shows atk range circle
+    public void showRangeIndicator(int row, int col, int range) {
+        this.showRange = true;
+        this.rangeRow = row;
+        this.rangeCol = col;
+        this.rangeRadius = range;
+        repaint();
+    }
+
+    // hides it
+    public void clearRangeIndicator() {
+        this.showRange = false;
+        repaint();
+    }
 
     // darkens the inactive player's half
     private void drawSideBlackout(Graphics2D g2d) {
@@ -170,6 +190,21 @@ public class GameMap extends JPanel {
             renderMob(g, mob);
         }
         drawProjectiles(g);
+
+        // draw atk range indicator circle if active
+        if (showRange) {
+            int centerX = rangeCol * TILE_SIZE + TILE_SIZE / 2;
+            int centerY = rangeRow * TILE_SIZE + TILE_SIZE / 2;
+            int radiusPx = rangeRadius * TILE_SIZE;
+            g2d.setColor(new Color(255, 255, 255, 40));
+            g2d.fillOval(centerX - radiusPx, centerY - radiusPx,
+                    radiusPx * 2, radiusPx * 2);
+            g2d.setColor(new Color(255, 255, 255, 100));
+            g2d.setStroke(new BasicStroke(2));
+            g2d.drawOval(centerX - radiusPx, centerY - radiusPx,
+                    radiusPx * 2, radiusPx * 2);
+            g2d.setStroke(new BasicStroke(1));
+        }
 
         // Darken inactive side
         drawSideBlackout(g2d);
@@ -373,6 +408,10 @@ public class GameMap extends JPanel {
         int barHeight = 4;
         int barX = drawX;
         int barY = drawY - 6;
+
+        // Black outline
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(barX, barY, barWidth, barHeight);
 
         // Background (dark)
         g2d.setColor(new Color(0, 0, 0, 180));
