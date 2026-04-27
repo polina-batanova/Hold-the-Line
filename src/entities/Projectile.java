@@ -20,4 +20,24 @@ public class Projectile {
     public boolean isActive() {
         return active;
     }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getTargetX() {
+        return targetX;
+    }
+
+    public double getTargetY() {
+        return targetY;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
 }
