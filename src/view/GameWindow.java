@@ -14,8 +14,8 @@ public class GameWindow extends JFrame {
         // Prevent window from being resized
         setResizable(false);
 
-        Player p1 = new Player("Player 1", 100, 500);
-        Player p2 = new Player("Player 2", 100, 500);
+        Player p1 = new Player("Player 1", 100, 200);
+        Player p2 = new Player("Player 2", 100, 200);
 
         GameManager gameManager = new GameManager(p1, p2);
         gameManager.startGame();

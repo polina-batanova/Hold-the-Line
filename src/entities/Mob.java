@@ -5,6 +5,7 @@ package entities;
 public class Mob extends Entity {
 
     private int hp;
+    private final int maxHp;
     private int speed;
     private int damage; // amount of base hp deducted
     private int bounty; // reward on mob's death
@@ -18,6 +19,9 @@ public class Mob extends Entity {
     private int pathIndex;
     // delay before move
     private int spawnDelay;
+
+    private boolean dying;
+    private int deathFrame;
 
     // constructor compatible with milestone 1 tests
     public Mob(String name, int row, int col,
@@ -45,6 +49,7 @@ public class Mob extends Entity {
             throw new IllegalArgumentException("Mob cost cannot be negative.");
         }
         this.hp           = hp;
+        this.maxHp        = hp;
         this.speed        = speed;
         this.damage       = damage;
         this.bounty       = bounty;
@@ -53,8 +58,34 @@ public class Mob extends Entity {
         this.path         = path;
         this.pathIndex    = 0;
         this.spawnDelay   = 0;
+        this.dying = false;
+        this.deathFrame = 0;
+    }
+    // tier 1 mob
+    public static Mob createGoblin(int playerNumber, int[][] path) {
+        return new Mob("Goblin",
+                path[0][0], path[0][1],
+                30, 1, 5, 3, 40,
+                playerNumber, path);
     }
 
+    public static Mob createWolf(int playerNumber, int[][] path) {
+        return new Mob("Wolf",
+                path[0][0], path[0][1],
+                35, 2, 8, 5, 75,
+                playerNumber, path);
+    }
+
+    public static Mob createSlime(int playerNumber, int[][] path) {
+        return new Mob("Slime",
+                path[0][0], path[0][1],
+                100, 1, 15, 8, 120,
+                playerNumber, path);
+    }
+
+    public int getMaxHp() {
+        return maxHp;
+    }
     // movement
     public void move() {
         if (path == null || hasReachedEnd()) return;
@@ -102,5 +133,28 @@ public class Mob extends Entity {
     // true if mob's hp <= 0
     public boolean isDead() {
         return hp <= 0;
+    }
+
+    public void startDeathAnimation() {
+        dying = true;
+        deathFrame = 0;
+    }
+
+    public boolean isDying() {
+        return dying;
+    }
+
+    public void updateDeathAnimation() {
+        if (dying) {
+            deathFrame++;
+        }
+    }
+
+    public int getDeathFrame() {
+        return deathFrame;
+    }
+
+    public boolean shouldRemoveAfterDeath() {
+        return dying && deathFrame >= 6;
     }
 }

@@ -9,6 +9,13 @@ public class Player {
     private int health;
     private int money;
     private String name;
+    private int mobSpendBonus = 0;
+
+    public int getMobSpendBonus() { return mobSpendBonus; }
+    public void addMobSpendBonus(int cost) {
+        this.mobSpendBonus += (int)(cost * 0.15);
+    }
+    public void resetMobSpendBonus() { this.mobSpendBonus = 0; }
 
 
     // queue for mobs before round starts
@@ -30,8 +37,6 @@ public class Player {
         this.name = name;
         this.health = health;
         this.money = money;
-
-
         this.queuedMobs = new LinkedList<>();
     }
 

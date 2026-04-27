@@ -10,6 +10,11 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import entities.Projectile;
+
+import javax.imageio.ImageIO;
+import java.io.IOException;
+
 
 
 public class GameMap extends JPanel {
@@ -24,6 +29,10 @@ public class GameMap extends JPanel {
     private int p2Health = 100;
     private boolean isBattlePhase = false;
 
+    // Game-over overlay state
+    private boolean isGameOver = false;
+    private String winnerName = "";
+
     // Dynamic lists provided by the GameController
     private List<Tower> currentTowers = new ArrayList<>();
     private List<Mob> currentMobs = new ArrayList<>();
@@ -32,6 +41,20 @@ public class GameMap extends JPanel {
     // Global tick used to sync all sprite animations
     private int animationTick = 0;
     private final Timer animationTimer;
+
+    private List<Projectile> projectiles = new ArrayList<>();
+    private BufferedImage[] projectileImages = new BufferedImage[27];
+
+    // atk range indicator state
+    private boolean showRange = false;
+    private int rangeRow = 0;
+    private int rangeCol = 0;
+    private int rangeRadius = 0;
+
+    private int currentQueueSize = 0;
+
+    private int currentIncome = 0;
+    private int currentMobBonus = 0;
 
     /**
      * 0: Grass,
@@ -63,6 +86,16 @@ public class GameMap extends JPanel {
         this.assetLoader = new AssetLoader();
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
 
+        for (int i = 0; i < projectileImages.length; i++) {
+            try {
+                projectileImages[i] = ImageIO.read(
+                        getClass().getResource("/assets/towers/projectiles/arrow/" + (i + 1) + ".png")
+                );
+            } catch (IOException | IllegalArgumentException e) {
+                System.out.println("Could not load projectile image " + (i + 1));
+            }
+        }
+
         animationTimer = new Timer(120, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,13 +103,44 @@ public class GameMap extends JPanel {
                 repaint();
             }
         });
+
         animationTimer.start();
+
     }
 
     public void updateData(List<Tower> towers, List<Mob> mobs) {
         this.currentTowers = towers;
         this.currentMobs = mobs;
         repaint();
+    }
+
+    // shows atk range circle
+    public void showRangeIndicator(int row, int col, int range) {
+        this.showRange = true;
+        this.rangeRow = row;
+        this.rangeCol = col;
+        this.rangeRadius = range;
+        repaint();
+    }
+
+    // hides it
+    public void clearRangeIndicator() {
+        this.showRange = false;
+        repaint();
+    }
+
+    // darkens the inactive player's half
+    private void drawSideBlackout(Graphics2D g2d) {
+        if (isBattlePhase || isGameOver) return;
+        int fenceY = 7 * TILE_SIZE;
+        g2d.setColor(new Color(0, 0, 0, 60));
+        if (currentPlayerName.contains("1")) {
+            // p1's turn
+            g2d.fillRect(0, 0, COLS * TILE_SIZE, fenceY);
+        } else {
+            // p2's turn
+            g2d.fillRect(0, fenceY + TILE_SIZE, COLS * TILE_SIZE, (ROWS * TILE_SIZE) - fenceY - TILE_SIZE);
+        }
     }
 
     @Override
@@ -130,18 +194,92 @@ public class GameMap extends JPanel {
         for (Mob mob : currentMobs) {
             renderMob(g, mob);
         }
+        drawProjectiles(g);
+
+        // draw atk range indicator circle if active
+        if (showRange) {
+            int centerX = rangeCol * TILE_SIZE + TILE_SIZE / 2;
+            int centerY = rangeRow * TILE_SIZE + TILE_SIZE / 2;
+            int radiusPx = rangeRadius * TILE_SIZE;
+            g2d.setColor(new Color(255, 255, 255, 40));
+            g2d.fillOval(centerX - radiusPx, centerY - radiusPx,
+                    radiusPx * 2, radiusPx * 2);
+            g2d.setColor(new Color(255, 255, 255, 100));
+            g2d.setStroke(new BasicStroke(2));
+            g2d.drawOval(centerX - radiusPx, centerY - radiusPx,
+                    radiusPx * 2, radiusPx * 2);
+            g2d.setStroke(new BasicStroke(1));
+        }
+
+        // Darken inactive side
+        drawSideBlackout(g2d);
 
         // Draw UI Overlay Elements
         drawHUD(g);
+
+        if (isGameOver) {
+            drawGameOver((Graphics2D) g);
+        }
     }
+
     public void updateHUD(String playerName, int gold, int round,
-                          int p1Hp, int p2Hp, boolean battlePhase) {
+                          int p1Hp, int p2Hp, boolean battlePhase, int queueSize, int income, int mobBonus) {
+        // HUD stops updating during game-over
+        if (isGameOver) {
+            return;
+        }
         this.currentPlayerName = playerName;
         this.currentGold = gold;
         this.currentRound = round;
         this.p1Health = p1Hp;
         this.p2Health = p2Hp;
         this.isBattlePhase = battlePhase;
+        this.currentQueueSize = queueSize;
+        this.currentIncome = income;
+        this.currentMobBonus = mobBonus;
+    }
+
+    // Marks the game as over and stores the winner's display name.
+    public void setGameOver(String winner) {
+        if (winner == null || winner.isBlank()) {
+            throw new IllegalArgumentException("Winner name cannot be blank or null.");
+        }
+        this.isGameOver = true;
+        this.winnerName = winner;
+        repaint();
+    }
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    public String getWinnerName() {
+        return winnerName;
+    }
+
+    private void drawGameOver(Graphics2D g2d) {
+        int w = COLS * TILE_SIZE;
+        int h = ROWS * TILE_SIZE;
+
+        // Semi-transparent black overlay
+        g2d.setColor(new Color(0, 0, 0, 150));
+        g2d.fillRect(0, 0, w, h);
+
+        // "GAME OVER" heading
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Arial", Font.BOLD, 36));
+        FontMetrics fm1 = g2d.getFontMetrics();
+        String title = "GAME OVER";
+        int titleX = (w - fm1.stringWidth(title)) / 2;
+        int titleY = (h / 2) - 30;
+        g2d.drawString(title, titleX, titleY);
+
+        // Winner text
+        g2d.setFont(new Font("Arial", Font.PLAIN, 24));
+        FontMetrics fm2 = g2d.getFontMetrics();
+        String winnerLine = winnerName + " wins!";
+        int winnerX = (w - fm2.stringWidth(winnerLine)) / 2;
+        int winnerY = (h / 2) + 20;
+        g2d.drawString(winnerLine, winnerX, winnerY);
     }
 
     private void drawHUD(Graphics g) {
@@ -164,9 +302,14 @@ public class GameMap extends JPanel {
         g2d.setColor(new Color(255, 215, 0));
         g2d.drawString("Gold: " + currentGold, 10, hudY + 40);
 
-        // Round counter (center)
-        g2d.setColor(Color.WHITE);
-        g2d.drawString("Round " + currentRound, 370, hudY + 30);
+        // income display
+        g2d.setColor(new Color(180, 255, 180));
+        g2d.setFont(new Font("Arial", Font.PLAIN, 11));
+        String incomeText = "Income: " + currentIncome;
+        if (currentMobBonus > 0) {
+            incomeText += " (+" + currentMobBonus + " mob bonus)";
+        }
+        g2d.drawString(incomeText, 310, hudY + 30);
 
         // HP displays
         g2d.setColor(new Color(100, 200, 255));
@@ -181,7 +324,7 @@ public class GameMap extends JPanel {
             g2d.drawRoundRect(500, hudY + 5, 120, 35, 10, 10);
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("Arial", Font.BOLD, 12));
-            g2d.drawString("BUY MOB - 30g", 510, hudY + 28);
+            g2d.drawString("BUY MOB", 535, hudY + 28);
         }
 
         // Button for ending turn
@@ -192,50 +335,182 @@ public class GameMap extends JPanel {
             g2d.drawRoundRect(660, hudY + 5, 120, 35, 10, 10);
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("Arial", Font.BOLD, 12));
-            g2d.drawString("END TURN", 685, hudY + 28);
+            String label;
+            if (currentPlayerName.contains("1")) {
+                label = "END TURN (P1)";
+            } else {
+                label = "START BATTLE";
+            }
+            g2d.drawString(label, 670, hudY + 28);
+        }
+        // queue counter
+        if (!isBattlePhase && currentQueueSize > 0) {
+            g2d.setColor(new Color(255, 215, 0));
+            g2d.setFont(new Font("Arial", Font.BOLD, 11));
+            g2d.drawString("Queue: " + currentQueueSize, 140, hudY + 40);
         }
     }
 
 
     // Renders an animated walking mob
     private void renderMob(Graphics g, Mob m) {
-        String tier = "tier1";
-        BufferedImage sheet = assetLoader.getSprite("mobs/" + tier + "/walk");
+        String spriteKey = getMobSpriteKey(m);
+        if (m.isDying()) {
+            spriteKey = getMobDeathSpriteKey(m);
+        } else {
+            spriteKey = getMobSpriteKey(m);
+        }
+        BufferedImage sheet = assetLoader.getSprite(spriteKey);
+
+        int drawX = m.getCol() * TILE_SIZE;
+        int drawY = m.getRow() * TILE_SIZE;
+
         if (sheet != null) {
             int frameCount = 6;
             int frameWidth = sheet.getWidth() / frameCount;
             int frameHeight = sheet.getHeight();
 
-            int currentFrame = (animationTick / 2) % frameCount;
-            BufferedImage frame = sheet.getSubimage(currentFrame * frameWidth, 0, frameWidth, frameHeight);
+            int currentFrame;
 
-            int x = m.getCol() * TILE_SIZE;
-            int y = m.getRow() * TILE_SIZE;
+            if (m.isDying()) {
+                currentFrame = Math.min(m.getDeathFrame(), frameCount - 1);
+            } else {
+                currentFrame = (animationTick / 2) % frameCount;
+            }
 
-            g.drawImage(frame, x, y, TILE_SIZE, TILE_SIZE, null);
+            BufferedImage frame = sheet.getSubimage(
+                    currentFrame * frameWidth,
+                    0,
+                    frameWidth,
+                    frameHeight
+            );
+
+            g.drawImage(frame, drawX, drawY, TILE_SIZE, TILE_SIZE, null);
+        }
+        if (!m.isDying()) {
+            drawMobHpBar((Graphics2D) g, m, drawX, drawY);
+        }
+    }
+
+    private String getMobDeathSpriteKey(Mob m) {
+        if (m.getName().equals("Wolf")) {
+            return "mobs/wolf/D_Death";
+        }
+
+        if (m.getName().equals("Slime")) {
+            return "mobs/slime/D_Death";
+        }
+
+        return "mobs/Goblin/D_Death";
+    }
+
+    private String getMobSpriteKey(Mob m) {
+        if (m.getName().equals("Wolf")) {
+            return "mobs/wolf/D_Walk";
+        }
+
+        if (m.getName().equals("Slime")) {
+            return "mobs/slime/D_Walk";
+        }
+
+        return "mobs/Goblin/walk";
+    }
+
+    private String getMobTier(Mob m) {
+        if (m.getName().equals("Wolf")) {
+            return "tier2";
+        }
+
+        if (m.getName().equals("Slime")) {
+            return "tier3";
+        }
+
+        return "tier1";
+    }
+
+    private void drawMobHpBar(Graphics2D g2d, Mob m, int drawX, int drawY) {
+        int barWidth = TILE_SIZE;
+        int barHeight = 4;
+        int barX = drawX;
+        int barY = drawY - 6;
+
+        // Black outline
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(barX, barY, barWidth, barHeight);
+
+        // Background (dark)
+        g2d.setColor(new Color(0, 0, 0, 180));
+        g2d.fillRect(barX, barY, barWidth, barHeight);
+
+        // background (dark grey fill)
+        g2d.setColor(new Color(40, 40, 40));
+        g2d.fillRect(barX + 1, barY + 1, barWidth - 1, barHeight - 1);
+
+        // Foreground fill width = currentHp / maxHp
+        double pct = (m.getMaxHp() <= 0) ? 0.0 : (double) m.getHp() / m.getMaxHp();
+        if (pct < 0) pct = 0;
+        if (pct > 1) pct = 1;
+        int fill = (int) Math.round((barWidth - 1) * pct);
+
+        g2d.setColor(hpBarColor(pct));
+        g2d.fillRect(barX + 1, barY + 1, fill, barHeight - 1);
+    }
+
+    public static Color hpBarColor(double pct) {
+        if (pct > 0.5) {
+            return new Color(60, 200, 60);   // green
+        } else if (pct >= 0.25) {
+            return new Color(230, 200, 50);  // yellow
+        } else {
+            return new Color(220, 50, 50);   // red
         }
     }
 
     // Draw a tower
     private void renderTower(Graphics g, Tower t) {
-        BufferedImage sheet = assetLoader.getSprite("towers/idle/1");
-        if (sheet != null) {
+        String spriteKey = spriteKeyForLevel(t.getLevel());
+        int frameCount = frameCountForLevel(t.getLevel());
 
-            // Sprite dimensions
-            int spriteWidth = 70;
-            int spriteHeight = 130;
+        BufferedImage sheet = assetLoader.getSprite(spriteKey);
+        if (sheet == null) {
+            return;
+        }
 
-            int currentFrame = 0;
+        // Compute frame dimensions from the sheet itself so we don't hard-code pixels.
+        int sheetFrameWidth  = sheet.getWidth()  / Math.max(1, frameCount);
+        int sheetFrameHeight = sheet.getHeight();
 
-            BufferedImage frame = sheet.getSubimage(currentFrame * spriteWidth, 0, spriteWidth, spriteHeight);
+        int currentFrame = (animationTick / 2) % Math.max(1, frameCount);
+        BufferedImage frame = sheet.getSubimage(
+                currentFrame * sheetFrameWidth, 0, sheetFrameWidth, sheetFrameHeight);
 
-            // Calculate X position
-            int x = (t.getCol() * TILE_SIZE) + (TILE_SIZE / 2) - (spriteWidth / 2);
+        // Rendered tower size on the map
+        int drawWidth  = 70;
+        int drawHeight = 130;
 
-            // Calculate Y position
-            int y = (t.getRow() * TILE_SIZE) + TILE_SIZE - spriteHeight;
+        // Center the sprite on the tower tile, anchored to the bottom of the tile.
+        int x = (t.getCol() * TILE_SIZE) + (TILE_SIZE / 2) - (drawWidth / 2);
+        int y = (t.getRow() * TILE_SIZE) + TILE_SIZE - drawHeight;
 
-            g.drawImage(frame, x, y, spriteWidth, spriteHeight, null);
+        g.drawImage(frame, x, y, drawWidth, drawHeight, null);
+    }
+
+    public static int frameCountForLevel(int level) {
+        if (level <= 1) {
+            return 4;
+        } else {
+            return 6;
+        }
+    }
+
+    // Returns the sprite for a given tower level
+    public static String spriteKeyForLevel(int level) {
+        if (level <= 1) {
+            return "towers/idle/2";   // small wooden tower
+        } else if (level == 2) {
+            return "towers/idle/5";   // medium stone tower
+        } else {
+            return "towers/idle/7";   // full castle
         }
     }
 
@@ -324,5 +599,50 @@ public class GameMap extends JPanel {
     public int calculateFrameX(int tick, int sheetWidth, int totalFrames) {
         int frameWidth = sheetWidth / totalFrames;
         return (tick % totalFrames) * frameWidth;
+
+    }
+
+    public void setProjectiles(List<Projectile> projectiles) {
+        this.projectiles = projectiles;
+    }
+
+
+    private void drawProjectiles(Graphics g) {
+        for (Projectile p : projectiles) {
+            int x = (int) (p.getX() * TILE_SIZE);
+            int y = (int) (p.getY() * TILE_SIZE);
+
+            BufferedImage img = getProjectileImageByAngle(p.getAngle());
+
+            if (img != null) {
+                g.drawImage(img, x - 8, y - 8, 16, 16, null);
+            } else {
+                g.setColor(Color.RED);
+                g.fillOval(x - 4, y - 4, 8, 8);
+            }
+        }
+    }
+
+    private BufferedImage getProjectileImageByAngle(double angle) {
+        double normalized = angle;
+
+        if (normalized < 0) {
+            normalized += Math.PI * 2;
+        }
+
+
+        int offset = 7;
+
+        int index = (int) Math.round(normalized / (Math.PI * 2) * projectileImages.length);
+
+        index = (index + offset) % projectileImages.length;
+
+        if (index < 0) {
+            index += projectileImages.length;
+        }
+
+        return projectileImages[index];
     }
 }
+
+

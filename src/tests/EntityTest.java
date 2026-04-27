@@ -3,6 +3,9 @@ package tests;
 import entities.Mob;
 import entities.Tower;
 import org.junit.jupiter.api.Test;
+import view.GameMap;
+
+import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -251,5 +254,39 @@ public class EntityTest {
                 50, 1, 10, 10, 50, 1, testPath);
         mob.move();
         assertEquals(1, mob.getCol());
+    }
+
+    @Test
+    public void testTowerLevel() {
+        Tower t = new Tower("Archer", 0, 0, 3, 5, 100);
+        assertEquals(1, t.getLevel());
+        assertFalse(t.isMaxLevel());
+    }
+
+    @Test
+    public void testUpgradeCost() {
+        Tower t = new Tower("Archer", 0, 0, 3, 5, 100);
+
+        // level 1 -> 2 should cost 75 (level * 75)
+        assertEquals(75, t.getUpgradeCost());
+        t.upgrade();
+
+        // level 2 -> 3 should cost 150
+        assertEquals(2, t.getLevel());
+        assertEquals(150, t.getUpgradeCost());
+    }
+    @Test
+    public void testTowerMaxLevel() {
+        Tower t = new Tower("Archer", 0, 0, 3, 5, 100);
+        t.upgrade();
+        t.upgrade();
+        assertTrue(t.isMaxLevel());
+    }
+    @Test
+    public void testHpBarColor() {
+        assertEquals(new Color(60, 200, 60), GameMap.hpBarColor(0.51)); // Green
+        assertEquals(new Color(230, 200, 50), GameMap.hpBarColor(0.50)); // Yellow (boundary)
+        assertEquals(new Color(230, 200, 50), GameMap.hpBarColor(0.25)); // Yellow (boundary)
+        assertEquals(new Color(220, 50, 50), GameMap.hpBarColor(0.24)); // Red
     }
 }

@@ -18,7 +18,7 @@ public class GameManager {
         this.player2 = player2;
         this.state = GameState.NOT_STARTED;
         this.currentRound = 0;
-        this.baseIncome = 50;
+        this.baseIncome = 100;
     }
 
     public void startGame() {
@@ -37,8 +37,10 @@ public class GameManager {
                 break;
             case ROUND_EXECUTION:
                 currentRound++;
-                baseIncome += 10;
+                baseIncome += 15;
                 giveRoundIncome();
+                player1.resetMobSpendBonus();
+                player2.resetMobSpendBonus();
                 state = GameState.PLAYER1_TURN;
                 break;
             default:
@@ -78,11 +80,9 @@ public class GameManager {
     }
 
     public void giveRoundIncome() {
-        player1.addMoney(baseIncome);
-        player2.addMoney(baseIncome);
+        player1.addMoney(baseIncome + player1.getMobSpendBonus());
+        player2.addMoney(baseIncome + player2.getMobSpendBonus());
     }
-
-
 
     public boolean buyTower(Player p, int cost) {
         if (p == null) {
@@ -97,8 +97,9 @@ public class GameManager {
             throw new IllegalArgumentException("Invalid input.");
         }
 
-         if (p.spendMoney(cost)) {
+        if (p.spendMoney(cost)) {
             p.addMobToQueue(mob);
+            p.addMobSpendBonus(cost);
             return true;
         }
 

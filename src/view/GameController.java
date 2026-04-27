@@ -14,12 +14,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 
+import entities.Projectile;
+
+
 public class GameController {
     private final GameMap gameMap;
     private final GameManager gameManager;
     private final List<Tower> placedTowers = new ArrayList<>();
     private final List<Mob> activeMobs = new ArrayList<>();
     private Timer gameLoop;
+    private List<Projectile> projectiles = new ArrayList<>();
 
     // path definitions
     // player 1 road (top)
@@ -123,19 +127,40 @@ public class GameController {
         }
     }
 
-    // purchases
-    // buys mob for current player
     private void purchaseMob() {
         Player current = gameManager.getCurrentPlayer();
         int playerNum = (current == gameManager.getPlayer1()) ? 1 : 2;
         int[][] path = (playerNum == 1) ? PATH_TOP : PATH_BOTTOM;
 
-        // create mob at the start of the path
-        Mob mob = new Mob("Goblin", path[0][0], path[0][1],
-                50, 1, 10, 5, 30, playerNum, path);
+        String[] options = {"Goblin - 40g", "Wolf - 75g", "Slime - 120g"};
+
+        int choice = JOptionPane.showOptionDialog(
+                gameMap,
+                "Choose a mob:",
+                "Buy Mob",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (choice == JOptionPane.CLOSED_OPTION) {
+            return;
+        }
+
+        Mob mob;
+
+        if (choice == 0) {
+            mob = Mob.createGoblin(playerNum, path);
+        } else if (choice == 1) {
+            mob = Mob.createWolf(playerNum, path);
+        } else {
+            mob = Mob.createSlime(playerNum, path);
+        }
 
         if (gameManager.queueMob(current, mob, mob.getCost())) {
-            System.out.println(current.getName() + " queued a mob!");
+            System.out.println(current.getName() + " queued " + mob.getName());
         } else {
             JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
         }
@@ -143,17 +168,33 @@ public class GameController {
 
     // Tries to place a tower
     private void attemptTowerPlacement(int row, int col) {
+        Player current = gameManager.getCurrentPlayer();
 
-        // Check if a tower is already at this spot
+        // tower placement to own side of the map
+        boolean isPlayer1 = (current == gameManager.getPlayer1());
+        if (isPlayer1 && row < 8) {
+            JOptionPane.showMessageDialog(gameMap, "You can only place towers on your side!");
+            return;
+        }
+        if (!isPlayer1 && row > 6) {
+            JOptionPane.showMessageDialog(gameMap, "You can only place towers on your side!");
+            return;
+        }
+
+        // If a tower already exists on this tile, show options
         for (Tower t : placedTowers) {
             if (t.getRow() == row && t.getCol() == col) {
-                JOptionPane.showMessageDialog(gameMap, "A tower is already here!");
+                gameMap.showRangeIndicator(row, col, t.getRange());
+                showTowerOptions(t, current);
+                gameMap.clearRangeIndicator();
                 return;
             }
         }
 
-        int cost = 100;
-        Player current = gameManager.getCurrentPlayer();
+        // preview range if no tower
+        gameMap.showRangeIndicator(row, col, 3);
+
+        int cost = 80;
 
         // Ask the player for confirmation
         int choice = JOptionPane.showConfirmDialog(
@@ -167,7 +208,8 @@ public class GameController {
         // If the player confirms, place the tower
         if (choice == JOptionPane.YES_OPTION) {
             if (current.spendMoney(cost)) {
-                placedTowers.add(new Tower("Archer", row, col, 3, 10, cost));
+                // starts at level 1 with damage=5, range=3 per Area 2 scaling
+                placedTowers.add(new Tower("Archer", row, col, 3, 5, cost));
                 System.out.println("Tower placed at (" + row + "," + col + ")");
             } else {
                 JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
@@ -181,6 +223,15 @@ public class GameController {
             if (gameManager.getState() == GameState.ROUND_EXECUTION) {
                 processExecutionPhase();
             }
+
+            // update visual projectiles
+            for (Projectile p : projectiles) {
+                p.update();
+            }
+
+            projectiles.removeIf(p -> !p.isActive());
+            gameMap.setProjectiles(projectiles);
+
             gameMap.updateData(placedTowers, activeMobs);
 
             // update hud
@@ -192,40 +243,67 @@ public class GameController {
                     gameManager.getCurrentRound(),
                     gameManager.getPlayer1().getHealth(),
                     gameManager.getPlayer2().getHealth(),
-                    battle
+                    battle,
+                    current.getQueuedMobs().size(),
+                    gameManager.getBaseIncome() + current.getMobSpendBonus(),
+                    current.getMobSpendBonus()
             );
         });
         gameLoop.start();
+
+
     }
 
 
     // Handles movement based on path tiles, tower range checks
     private void processExecutionPhase() {
+
+        for (Mob mob : activeMobs) {
+            mob.updateDeathAnimation();
+        }
         // If all mobs are gone, return to Player 1's turn
+
         if (activeMobs.isEmpty()) {
             gameManager.nextTurn();
             System.out.println("Round ended. Player 1's turn.");
             return;
         }
 
+        // move all mobs
+        for (Mob mob : activeMobs) {
+            mob.move();
+        }
+
+        // tower combat
+        for (Tower t : placedTowers) {
+            t.tickCooldown();
+            if (!t.hasValidTarget()) {
+                t.setCurrentTarget(null);
+                for (Mob mob : activeMobs) {
+                    if (t.isInRange(mob) && !mob.isDead()) {
+                        t.setCurrentTarget(mob);
+                        break;
+                    }
+                }
+            }
+            if (t.getCurrentTarget() != null && !t.getCurrentTarget().isDead() && t.canFire()) {
+                Mob target = t.getCurrentTarget();
+                addProjectile(t, target);
+                target.takeDamage(t.getDamage());
+                t.resetCooldown();
+            }
+        }
+
         Iterator<Mob> it = activeMobs.iterator();
         while (it.hasNext()) {
             Mob mob = it.next();
 
-            // move
-            mob.move();
-            // tower combat
-            for (Tower t : placedTowers) {
-                if (t.isInRange(mob)) {
-                    mob.takeDamage(t.getDamage());
-                }
-            }
-
-            // check if mob died
-            if (mob.isDead()) {
-                // bounty goes to the DEFENDING player
+            if (mob.isDead() && !mob.isDying()) {
                 getDefender(mob).addMoney(mob.getBounty());
+                mob.startDeathAnimation();
+            } else if (mob.shouldRemoveAfterDeath()) {
                 it.remove();
+
             }
             // check if mob reached enemy base
             else if (mob.hasReachedEnd()) {
@@ -241,6 +319,7 @@ public class GameController {
                             : gameManager.getPlayer1().getName();
                     System.out.println("GAME OVER! " + winner + " wins!");
                     gameManager.setState(GameState.GAME_OVER);
+                    gameMap.setGameOver(winner);
                     activeMobs.clear();
                     gameLoop.stop();
                     return;
@@ -261,5 +340,76 @@ public class GameController {
     private boolean isPlayerTurn() {
         GameState s = gameManager.getState();
         return s == GameState.PLAYER1_TURN || s == GameState.PLAYER2_TURN;
+    }
+
+    private void addProjectile(Tower tower, Mob mob) {
+        double startX = tower.getCol() + 0.5;
+        double startY = tower.getRow() + 0.5;
+
+        double targetX = mob.getCol() + 0.5;
+        double targetY = mob.getRow() + 0.5;
+
+        Projectile p = new Projectile(startX, startY, targetX, targetY);
+
+        projectiles.add(p);
+        gameMap.setProjectiles(projectiles);
+    }
+    private void showTowerOptions(Tower tower, Player player) {
+        String[] options = {"Upgrade", "Sell", "Cancel"};
+
+        int choice = JOptionPane.showOptionDialog(
+                gameMap,
+                "Tower options:",
+                "Tower",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (choice == 0) {
+            upgradeTower(tower, player);
+        } else if (choice == 1) {
+            sellTower(tower, player);
+        }
+    }
+
+    private void upgradeTower(Tower tower, Player player) {
+        if (tower.isMaxLevel()) {
+            JOptionPane.showMessageDialog(gameMap, "This tower is already at max level!");
+            return;
+        }
+
+        int upgradeCost = tower.getUpgradeCost();
+        int nextLevel = tower.getLevel() + 1;
+
+        int choice = JOptionPane.showConfirmDialog(
+                gameMap,
+                "Upgrade to Level " + nextLevel + "?\nCost: " + upgradeCost + " gold\n\nYour gold: "
+                        + player.getMoney(),
+                "Tower Upgrade",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (choice == JOptionPane.YES_OPTION) {
+            if (player.spendMoney(upgradeCost)) {
+                tower.upgrade();
+                System.out.println("Tower upgraded to level " + tower.getLevel());
+            } else {
+                JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
+            }
+        }
+    }
+
+    private void sellTower(Tower tower, Player player) {
+        int refund = tower.getSellRefund();
+
+        player.addMoney(refund);
+        placedTowers.remove(tower);
+
+        gameMap.repaint();
+
+        System.out.println("Tower sold for " + refund + " gold.");
     }
 }
