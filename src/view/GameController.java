@@ -132,7 +132,7 @@ public class GameController {
         int playerNum = (current == gameManager.getPlayer1()) ? 1 : 2;
         int[][] path = (playerNum == 1) ? PATH_TOP : PATH_BOTTOM;
 
-        String[] options = {"Wolf - 40g", "Slime - 80g"};
+        String[] options = {"Goblin - 20g", "Wolf - 40g", "Slime - 80g"};
 
         int choice = JOptionPane.showOptionDialog(
                 gameMap,
@@ -152,6 +152,8 @@ public class GameController {
         Mob mob;
 
         if (choice == 0) {
+            mob = Mob.createGoblin(playerNum, path);
+        } else if (choice == 1) {
             mob = Mob.createWolf(playerNum, path);
         } else {
             mob = Mob.createSlime(playerNum, path);
