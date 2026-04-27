@@ -262,12 +262,19 @@ public class GameController {
             );
         });
         gameLoop.start();
+
+
     }
 
 
     // Handles movement based on path tiles, tower range checks
     private void processExecutionPhase() {
+
+        for (Mob mob : activeMobs) {
+            mob.updateDeathAnimation();
+        }
         // If all mobs are gone, return to Player 1's turn
+
         if (activeMobs.isEmpty()) {
             gameManager.nextTurn();
             System.out.println("Round ended. Player 1's turn.");
@@ -304,11 +311,12 @@ public class GameController {
         while (it.hasNext()) {
             Mob mob = it.next();
 
-            // check if mob died
-            if (mob.isDead()) {
-                // bounty goes to the DEFENDING player
+            if (mob.isDead() && !mob.isDying()) {
                 getDefender(mob).addMoney(mob.getBounty());
+                mob.startDeathAnimation();
+            } else if (mob.shouldRemoveAfterDeath()) {
                 it.remove();
+
             }
             // check if mob reached enemy base
             else if (mob.hasReachedEnd()) {

@@ -283,6 +283,11 @@ public class GameMap extends JPanel {
     // Renders an animated walking mob
     private void renderMob(Graphics g, Mob m) {
         String spriteKey = getMobSpriteKey(m);
+        if (m.isDying()) {
+            spriteKey = getMobDeathSpriteKey(m);
+        } else {
+            spriteKey = getMobSpriteKey(m);
+        }
         BufferedImage sheet = assetLoader.getSprite(spriteKey);
 
         int drawX = m.getCol() * TILE_SIZE;
@@ -293,13 +298,43 @@ public class GameMap extends JPanel {
             int frameWidth = sheet.getWidth() / frameCount;
             int frameHeight = sheet.getHeight();
 
-            int currentFrame = (animationTick / 2) % frameCount;
-            BufferedImage frame = sheet.getSubimage(currentFrame * frameWidth, 0, frameWidth, frameHeight);
+            int currentFrame;
+
+            if (m.isDying()) {
+                currentFrame = Math.min(m.getDeathFrame(), frameCount - 1);
+            } else {
+                currentFrame = (animationTick / 2) % frameCount;
+            }
+
+            BufferedImage frame = sheet.getSubimage(
+                    currentFrame * frameWidth,
+                    0,
+                    frameWidth,
+                    frameHeight
+            );
 
             g.drawImage(frame, drawX, drawY, TILE_SIZE, TILE_SIZE, null);
         }
+        if (!m.isDying()) {
+            drawMobHpBar((Graphics2D) g, m, drawX, drawY);
+        }
 
         drawMobHpBar((Graphics2D) g, m, drawX, drawY);
+    }
+
+
+
+
+    private String getMobDeathSpriteKey(Mob m) {
+        if (m.getName().equals("Wolf")) {
+            return "mobs/wolf/D_Death";
+        }
+
+        if (m.getName().equals("Slime")) {
+            return "mobs/slime/D_Death";
+        }
+
+        return "mobs/Goblin/D_Death";
     }
 
     private String getMobSpriteKey(Mob m) {
