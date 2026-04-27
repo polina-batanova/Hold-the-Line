@@ -134,12 +134,35 @@ public class GameController {
         int playerNum = (current == gameManager.getPlayer1()) ? 1 : 2;
         int[][] path = (playerNum == 1) ? PATH_TOP : PATH_BOTTOM;
 
-        // create mob at the start of the path
-        Mob mob = new Mob("Goblin", path[0][0], path[0][1],
-                50, 1, 10, 5, 30, playerNum, path);
+        String[] options = {"Goblin - 20g", "Wolf - 50g", "Slime - 100g"};
+
+        int choice = JOptionPane.showOptionDialog(
+                gameMap,
+                "Choose a mob to queue:",
+                "Buy Mob",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (choice == JOptionPane.CLOSED_OPTION) {
+            return;
+        }
+
+        Mob mob;
+
+        if (choice == 0) {
+            mob = Mob.createGoblin(playerNum, path);
+        } else if (choice == 1) {
+            mob = Mob.createWolf(playerNum, path);
+        } else {
+            mob = Mob.createSlime(playerNum, path);
+        }
 
         if (gameManager.queueMob(current, mob, mob.getCost())) {
-            System.out.println(current.getName() + " queued a mob!");
+            System.out.println(current.getName() + " queued " + mob.getName());
         } else {
             JOptionPane.showMessageDialog(gameMap, "Not enough gold!");
         }
