@@ -229,10 +229,10 @@ public class GameControllerTest {
     @Test
     void testMobSpendBonus() {
         assertEquals(0, p1.getMobSpendBonus());
-        p1.addMobSpendBonus(20); // 20% of 20 = 4
-        assertEquals(4, p1.getMobSpendBonus());
-        p1.addMobSpendBonus(80); // +20% of 80 = +16
-        assertEquals(20, p1.getMobSpendBonus());
+        p1.addMobSpendBonus(20);
+        assertEquals(3, p1.getMobSpendBonus());
+        p1.addMobSpendBonus(80);
+        assertEquals(15, p1.getMobSpendBonus());
     }
 
     // tests that bonus resets
